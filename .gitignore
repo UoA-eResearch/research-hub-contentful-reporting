@@ -1,0 +1,10 @@
+node_modules/
+.env
+
+.serverless/*
+env/gserviceaccount.json
+.build
+contentfulReport.js
+schema.json
+.vscode
+reports/types.ts

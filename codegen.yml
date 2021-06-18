@@ -1,0 +1,8 @@
+schema: https://rhubcpapi.auckland.ac.nz/cer-graphql-service/
+documents: ./reports/**/*.graphql
+generates:
+  ./reports/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
