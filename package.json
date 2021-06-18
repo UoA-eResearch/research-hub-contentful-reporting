@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/UoA-eResearch/research-hub-contentful-reporting.git"
   },
-  "main": "contentFulsReport.ts",
+  "main": "contentfulReport.ts",
   "scripts": {
     "start": "sls offline",
     "test": "echo \"Error: no test specified\" && exit 1",
