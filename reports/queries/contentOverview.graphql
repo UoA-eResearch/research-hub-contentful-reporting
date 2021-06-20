@@ -5,6 +5,7 @@ query GetAllSubHubs($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             nextReview
             owner {
@@ -44,6 +45,7 @@ query GetAllArticles($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             nextReview
             owner {
@@ -80,6 +82,7 @@ query GetAllSoftwares($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             nextReview
             owner {
@@ -116,6 +119,7 @@ query GetAllOfficialDocuments($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             title
         }
@@ -129,6 +133,7 @@ query GetAllLinkCards($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             title
         }
@@ -142,6 +147,7 @@ query GetAllEvents($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             nextReview
             owner {
@@ -178,6 +184,7 @@ query GetAllPersons($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             name
         }
@@ -191,6 +198,7 @@ query GetAllServices($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             nextReview
             owner {
@@ -227,6 +235,7 @@ query GetAllVideos($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             title
         }
@@ -240,6 +249,7 @@ query GetAllCategories($limit: Int!, $skip: Int!) {
             sys {
                 id
                 publishedAt
+                firstPublishedAt
             }
             name
         }

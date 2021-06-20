@@ -16,11 +16,11 @@ const GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
- const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'Owner', 'Publisher', 'Content Type', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
+ const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
 type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean }
-type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
+type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean }
 type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Softwares' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories'
@@ -43,6 +43,7 @@ interface ContentOverviewData {
     relatedOrgs1: string | null | undefined;
     relatedOrgs2: string | null | undefined;
     relatedOrgs3: string | null | undefined;
+    firstPublishedAt: Date | null;
 }
 
 interface ContentOverviewSummaryData {
@@ -134,7 +135,8 @@ function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentOve
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
             linkedEntries: 
                 (item?.relatedItemsCollection?.total ?? 0) + 
-                (item?.internalPagesCollection?.total ?? 0)
+                (item?.internalPagesCollection?.total ?? 0),
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -156,7 +158,8 @@ function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentO
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total
+            linkedEntries: item?.relatedItemsCollection?.total,
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -178,7 +181,8 @@ function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<Conten
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total
+            linkedEntries: item?.relatedItemsCollection?.total,
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -190,7 +194,8 @@ function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery)
             contentType: item?.__typename,
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : ''
+            title: item?.title ? item.title : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -202,7 +207,8 @@ function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<Conten
             contentType: item?.__typename,
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : ''
+            title: item?.title ? item.title : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -224,7 +230,8 @@ function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentOverv
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total
+            linkedEntries: item?.relatedItemsCollection?.total,
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -236,7 +243,8 @@ function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentOve
             contentType: item?.__typename,
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.name ? item.name : ''
+            title: item?.name ? item.name : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -258,7 +266,8 @@ function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentO
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total
+            linkedEntries: item?.relatedItemsCollection?.total,
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -270,7 +279,8 @@ function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentOverv
             contentType: item?.__typename,
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : ''
+            title: item?.title ? item.title : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -282,7 +292,8 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
             contentType: item?.__typename,
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.name ? item.name : ''
+            title: item?.name ? item.name : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
         return rowData;
@@ -296,18 +307,6 @@ async function getData(): Promise<{summary: ContentOverviewSummaryRow , report: 
 
     const report: Partial<ContentOverviewData>[] = [];
 
-    const variables: Variables = {
-        limit: GRAPHQL_CHUNK_SIZE,
-        skip: 0
-    }
-
-    const test = (await client.watchQuery({
-        query: GetAllSubHubsDocument,
-        variables: {
-            limit: 50,
-            skip: 0
-        }
-    }).result()).data;
     const subHubRows = await getRows(client, GetAllSubHubsDocument, mapReportDataSubHubs, subHubsTotal);
     const articleRows = await getRows(client, GetAllArticlesDocument, mapReportDataArticles, articlesTotal);
     const softwareRows = await getRows(client, GetAllSoftwaresDocument, mapReportDataSoftwares, softwaresTotal);
@@ -421,7 +420,8 @@ function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
         "Publisher": data.publisher ?? '',
         "Slug": data.slug ?? '',
         "State": data.state ?? '',
-        "Title": data.title ?? ''
+        "Title": data.title ?? '',
+        "First Published": data.firstPublishedAt?.toISOString() ?? ''
     };
 }
 
