@@ -39,9 +39,7 @@ async function getData(): Promise<HeaderTitleRow[]> {
 }
 
 function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] {
-    const rows: HeaderTitleRow[] = [];
-
-    const categoryRows = queryData.categoryCollection?.items.map((item) => {
+    return queryData.categoryCollection?.items.map((item) => {
         const row: HeaderTitleRow = {
             "Category/Stage": item?.name ?? '',
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
@@ -54,18 +52,12 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
         }
 
         return row;
-    });
+    }) ?? [];
 
-
-    categoryRows ? rows.push(...categoryRows) : null;
-
-    return rows;
 }
 
 function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
-    const rows: HeaderTitleRow[] = [];
-
-    const stageRows = queryData.stageCollection?.items.map((item) => {
+    return queryData.stageCollection?.items.map((item) => {
         const row: HeaderTitleRow = {
             "Category/Stage": item?.name ?? '',
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
@@ -78,10 +70,6 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
         }
 
         return row;
-    });
-
-    stageRows ? rows.push(...stageRows) : null;
-
-    return rows;
+    }) ?? [];
 }
 
