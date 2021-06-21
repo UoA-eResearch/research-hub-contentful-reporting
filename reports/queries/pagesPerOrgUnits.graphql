@@ -1,0 +1,34 @@
+query GetPagesPerOrgUnit($limit: Int!, $skip: Int) {
+  orgUnitCollection(limit: $limit, skip: $skip) {
+    total
+  	items {
+      name
+      linkedFrom {
+        # fundingCollection(limit: 1) {
+        #   total
+		# }
+        caseStudyCollection(limit: 1) {
+          total
+        }
+        softwareCollection(limit: 1) {
+          total
+        }
+        equipmentCollection(limit: 1) {
+          total
+        }
+        subHubCollection(limit: 1) {
+          total
+        }
+        serviceCollection(limit: 1) {
+          total
+        }
+        eventCollection(limit: 1) {
+          total
+        }
+        articleCollection(limit: 1) {
+          total
+        }
+      }
+    }
+  }
+}

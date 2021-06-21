@@ -2,6 +2,7 @@ import { ApolloError } from "@apollo/client/core";
 import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from "aws-lambda";
 import { runContentOverview } from "./reports/contentOverview";
 import { runPagesPerCategory } from "./reports/pagesPerCategory";
+import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
 
 
 // Lambda exports
@@ -10,6 +11,7 @@ export async function contentful(event: APIGatewayProxyEvent, context: Context):
     try {
         await runContentOverview();
         await runPagesPerCategory();
+        await runPagesPerOrgUnit();
 
         return {
             statusCode: 200,
