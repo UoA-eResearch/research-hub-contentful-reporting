@@ -1,22 +1,22 @@
-import { getApolloClient } from "./apolloClient";
+import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
-import { CurrentReportDoc, DataOverTimeDoc } from "./googleDocsWrapper";
-import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
 
 
 
- /**
-  * Contentful graphql URI
-  * also maybe put this in parameter store ???
-  */
+/**
+ * Contentful graphql URI
+ * also maybe put this in parameter store ???
+ */
 const GRAPHQL_CHUNK_SIZE = 50;
 
 /**
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
- const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
+const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
 type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean }
@@ -61,17 +61,12 @@ interface ContentOverviewSummaryData {
     categories: number;
 }
 
-interface Variables {
-    limit: number;
-    skip: number;
-}
-
 // export function to run report
 
-export async function runContentOverview() {
+export async function runContentOverview(): Promise<void> {
     const currentReportDoc = CurrentReportDoc.instance;
     const dataOverTimeDoc = DataOverTimeDoc.instance;
-    
+
     const data = await getData();
 
     const reportSheet = await currentReportDoc.getSheet('Content Overview');
@@ -133,8 +128,8 @@ function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentOve
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: 
-                (item?.relatedItemsCollection?.total ?? 0) + 
+            linkedEntries:
+                (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.internalPagesCollection?.total ?? 0),
             firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
@@ -302,7 +297,7 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
 
 // get contentful data
 
-async function getData(): Promise<{summary: ContentOverviewSummaryRow , report: ContentOverviewRow[]}> {
+async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: ContentOverviewRow[] }> {
     const client = getApolloClient();
 
     const report: Partial<ContentOverviewData>[] = [];
@@ -363,7 +358,7 @@ async function getRows<T>(
     query: TypedDocumentNode<T>,
     mappingFunction: (data: T) => Partial<ContentOverviewData>[] | undefined,
     getTotalFunction: (data: T) => number
-): Promise<{ data: Partial<ContentOverviewData>[], total: number} | undefined> {
+): Promise<{ data: Partial<ContentOverviewData>[], total: number } | undefined> {
     const queryObservable = await client.watchQuery({
         query: query,
         variables: {
@@ -397,7 +392,7 @@ async function getRows<T>(
         i++;
     }
 
-    return {data: rows, total};
+    return { data: rows, total };
 }
 
 
