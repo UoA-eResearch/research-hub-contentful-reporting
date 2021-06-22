@@ -1,5 +1,5 @@
 schema: https://rhubcpapi.auckland.ac.nz/cer-graphql-service/
-documents: ./reports/**/*.graphql
+documents: ./queries/**/*.graphql
 generates:
   ./reports/types.ts:
     plugins:
