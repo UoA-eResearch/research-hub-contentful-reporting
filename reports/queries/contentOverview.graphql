@@ -18,6 +18,7 @@ query GetAllSubHubs($limit: Int!, $skip: Int!) {
             title
             slug
             relatedOrgsCollection(limit: 3) {
+                total
                 items {
                     name
                 }
@@ -58,6 +59,7 @@ query GetAllArticles($limit: Int!, $skip: Int!) {
             title
             slug
             relatedOrgsCollection(limit: 3) {
+                total
                 items {
                     name
                 }
@@ -95,6 +97,7 @@ query GetAllSoftwares($limit: Int!, $skip: Int!) {
             title
             slug
             relatedOrgsCollection(limit: 3) {
+                total
                 items {
                     name
                 }
@@ -160,6 +163,7 @@ query GetAllEvents($limit: Int!, $skip: Int!) {
             title
             slug
             relatedOrgsCollection(limit: 3) {
+                total
                 items {
                     name
                 }
@@ -211,6 +215,7 @@ query GetAllServices($limit: Int!, $skip: Int!) {
             title
             slug
             relatedOrgsCollection(limit: 3) {
+                total
                 items {
                     name
                 }

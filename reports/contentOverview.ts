@@ -16,11 +16,11 @@ const GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
+const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
 type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean }
-type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
+type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean }
 type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Softwares' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories'
@@ -40,6 +40,7 @@ interface ContentOverviewData {
     linkedEntries: number;
     isSsoProtected: boolean | null | undefined;
     isSearchable: boolean | null | undefined;
+    relatedOrgs: number;
     relatedOrgs1: string | null | undefined;
     relatedOrgs2: string | null | undefined;
     relatedOrgs3: string | null | undefined;
@@ -125,6 +126,7 @@ function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentOve
             publisher: item?.publisher?.name ? item.publisher.name : '',
             slug: item?.slug ? item.slug : '',
             title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
@@ -150,6 +152,7 @@ function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentO
             publisher: item?.publisher?.name ? item.publisher.name : '',
             slug: item?.slug ? item.slug : '',
             title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
@@ -173,6 +176,7 @@ function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<Conten
             publisher: item?.publisher?.name ? item.publisher.name : '',
             slug: item?.slug ? item.slug : '',
             title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
@@ -222,6 +226,7 @@ function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentOverv
             publisher: item?.publisher?.name ? item.publisher.name : '',
             slug: item?.slug ? item.slug : '',
             title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
@@ -258,6 +263,7 @@ function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentO
             publisher: item?.publisher?.name ? item.publisher.name : '',
             slug: item?.slug ? item.slug : '',
             title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
             relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
             relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
             relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
@@ -407,6 +413,7 @@ function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
         "Last Updated": data.lastUpdated?.toISOString() ?? '',
         "Linked Entries": data.linkedEntries ?? 0,
         "Next Review": data.nextReview?.toISOString() ?? '',
+        "Related Orgs": data.relatedOrgs ?? 0,
         "Related Orgs 1": data.relatedOrgs1 ?? '',
         "Related Orgs 2": data.relatedOrgs2 ?? '',
         "Related Orgs 3": data.relatedOrgs3 ?? '',
