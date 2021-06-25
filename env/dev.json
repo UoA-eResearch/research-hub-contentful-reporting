@@ -5,5 +5,5 @@
     "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/dev/research-hub/contentful-mgmt-access-token~true}",
     "CONTENTFUL_SPACE_ID": "${ssm:/dev/research-hub/contentful-space-id~true}",
     "BUCKET_NAME": "researchhub-contentful-backup",
-    "CONTENTFUL_CONTENT_DELIVERY_TOKEN": "${ssm:/test/research-hub/contentful-access-token~true}"
+    "CONTENTFUL_CONTENT_DELIVERY_TOKEN": "${ssm:/test/research-hub/contentful-preview-access-token~true}"
 }

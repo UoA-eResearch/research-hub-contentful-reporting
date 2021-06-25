@@ -1,5 +1,5 @@
 query GetAllSubHubs($limit: Int!, $skip: Int!) {
-    subHubCollection(limit: $limit, skip: $skip) {
+    subHubCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -40,7 +40,7 @@ query GetAllSubHubs($limit: Int!, $skip: Int!) {
 }
 
 query GetAllArticles($limit: Int!, $skip: Int!) {
-    articleCollection(limit: $limit, skip: $skip) {
+    articleCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -78,7 +78,7 @@ query GetAllArticles($limit: Int!, $skip: Int!) {
 }
 
 query GetAllSoftwares($limit: Int!, $skip: Int!) {
-    softwareCollection(limit: $limit, skip: $skip) {
+    softwareCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -116,7 +116,7 @@ query GetAllSoftwares($limit: Int!, $skip: Int!) {
 }
 
 query GetAllOfficialDocuments($limit: Int!, $skip: Int!) {
-    officialDocumentsCollection(limit: $limit, skip: $skip) {
+    officialDocumentsCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -130,7 +130,7 @@ query GetAllOfficialDocuments($limit: Int!, $skip: Int!) {
 }
 
 query GetAllLinkCards($limit: Int!, $skip: Int!) {
-    linkCardCollection(limit: $limit, skip: $skip) {
+    linkCardCollection(preview: true, limit: $limit, skip: $skip) {
         total
             items {
             sys {
@@ -144,7 +144,7 @@ query GetAllLinkCards($limit: Int!, $skip: Int!) {
 }
 
 query GetAllEvents($limit: Int!, $skip: Int!) {
-    eventCollection(limit: $limit, skip: $skip) {
+    eventCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -182,7 +182,7 @@ query GetAllEvents($limit: Int!, $skip: Int!) {
 }
 
 query GetAllPersons($limit: Int!, $skip: Int!) {
-    personCollection(limit: $limit, skip: $skip) {
+    personCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -196,7 +196,7 @@ query GetAllPersons($limit: Int!, $skip: Int!) {
 }
 
 query GetAllServices($limit: Int!, $skip: Int!) {
-    serviceCollection(limit: $limit, skip: $skip) {
+    serviceCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items{
             sys {
@@ -234,7 +234,7 @@ query GetAllServices($limit: Int!, $skip: Int!) {
 }
 
 query GetAllVideos($limit: Int!, $skip: Int!) {
-    videoCollection(limit: $limit, skip: $skip) {
+    videoCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
@@ -248,7 +248,7 @@ query GetAllVideos($limit: Int!, $skip: Int!) {
 }
 
 query GetAllCategories($limit: Int!, $skip: Int!) {
-    categoryCollection(limit: $limit, skip: $skip) {
+    categoryCollection(preview: true, limit: $limit, skip: $skip) {
         total
         items {
             sys {
