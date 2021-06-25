@@ -3,9 +3,9 @@ import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'SubHubs' | 'Articles' | 'Softwares'| 'Events' | 'Services' | 'Case Studies' | 'Equipments';
+type HeaderTitle = 'Category/Stage' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'SubHubs', 'Articles', 'Softwares', 'Events', 'Services', 'Case Studies', 'Equipments' ];
+const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment' ];
 
 
 
@@ -45,10 +45,10 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
-            Softwares: item?.linkedFrom?.softwareCollection?.total ?? 0,
+            Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
-            "Case Studies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
-            Equipments: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
+            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0
         }
 
         return row;
@@ -63,10 +63,10 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
-            Softwares: item?.linkedFrom?.softwareCollection?.total ?? 0,
+            Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
-            "Case Studies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
-            Equipments: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
+            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0
         }
 
         return row;

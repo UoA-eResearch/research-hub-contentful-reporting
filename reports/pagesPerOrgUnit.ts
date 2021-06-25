@@ -5,9 +5,9 @@ import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 const MAX_ITEMS = 50;
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Softwares'| 'Events' | 'Services' | 'Case Studies' | 'Equipments';
+type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Softwares', 'Events', 'Services', 'Case Studies', 'Equipments' ];
+const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment' ];
 
 
 export async function runPagesPerOrgUnit() {
@@ -58,13 +58,13 @@ async function getData(): Promise<HeaderTitleRow[]> {
 function mapData(data: GetPagesPerOrgUnitQuery): HeaderTitleRow[] {
     return data.orgUnitCollection?.items.map((item) => {
         const row: HeaderTitleRow = {
-            "Case Studies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
+            "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
             "Org Unit": item?.name ?? '',
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
-            Equipments: item?.linkedFrom?.equipmentCollection?.total ?? 0,
+            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
-            Softwares: item?.linkedFrom?.softwareCollection?.total ?? 0,
+            Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0
         };
 

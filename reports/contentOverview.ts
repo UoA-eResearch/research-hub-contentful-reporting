@@ -23,7 +23,7 @@ type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number
 type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean }
-type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Softwares' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories'
+type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories'
 
 declare type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category'
 
@@ -437,7 +437,7 @@ function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOvervi
         Events: data.events,
         Persons: data.persons,
         Services: data.services,
-        Softwares: data.softwares,
+        Software: data.softwares,
         SubHubs: data.subHubs,
         Title: data.title,
         Videos: data.videos
