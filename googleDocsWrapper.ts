@@ -1,4 +1,4 @@
-import { GoogleSpreadsheet } from "google-spreadsheet";
+import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import * as googleDocsConfig from "./googleDocsConfig.json";
 
 type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages/Category' | 'Pages/Org Unit';
@@ -43,7 +43,7 @@ export class CurrentReportDoc extends GoogleDoc {
         super(googleDocsConfig.CURRENT_REPORT_SPREADSHEET_ID);
     }
 
-    public async getSheet(sheetTitle: CurrentReportWorkSheet) {
+    public async getSheet(sheetTitle: CurrentReportWorkSheet): Promise<GoogleSpreadsheetWorksheet> {
         if (!this._initialised) {
             await this.initialise();
         }
@@ -63,7 +63,7 @@ export class DataOverTimeDoc extends GoogleDoc {
         super(googleDocsConfig.DATA_OVER_TIME_SPREADSHEET_ID);
     }
 
-    public async getSheet(sheetTitle: DataOverTimeWorkSheet) {
+    public async getSheet(sheetTitle: DataOverTimeWorkSheet): Promise<GoogleSpreadsheetWorksheet> {
         if (!this._initialised) {
             await this.initialise();
         }

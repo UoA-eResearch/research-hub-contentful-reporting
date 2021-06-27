@@ -1,5 +1,5 @@
 import { ApolloError } from "@apollo/client/core";
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyResult } from "aws-lambda";
 import { runContentOverview } from "./reports/contentOverview";
 import { runPagesPerCategory } from "./reports/pagesPerCategory";
 import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
@@ -7,7 +7,7 @@ import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
 
 // Lambda exports
 
-export async function contentful(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
+export async function contentful(): Promise<APIGatewayProxyResult> {
     try {
         await runContentOverview();
         await runPagesPerCategory();

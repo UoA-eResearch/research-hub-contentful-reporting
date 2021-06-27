@@ -40,7 +40,7 @@ export async function main (event: APIGatewayProxyEvent, context: Context): Prom
             body: JSON.stringify(e)
         }
     }
-};
+}
 
 function makeGraph(entries: Entry[]): { nodes: Node[], links: Link[] } {
     const nodes: Node[] = [];
