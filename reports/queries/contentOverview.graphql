@@ -1,262 +1,304 @@
 query GetAllSubHubs($limit: Int!, $skip: Int!) {
-    subHubCollection(preview: true, limit: $limit, skip: $skip) {
+  subHubCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
         items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            nextReview
-            owner {
-                name
-            }
-            publisher {
-                name
-            }
-            ssoProtected
-            title
-            slug
-            relatedOrgsCollection(limit: 3) {
-                total
-                items {
-                    name
-                }
-            }
-            searchable
-            stageCollection {
-                items {
-                    name
-                }
-            }
-            internalPagesCollection(limit: 1) {
-                total
-            }
-            relatedItemsCollection(limit: 1) {
-                total
-            }
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      internalPagesCollection(limit: 1) {
+        total
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }
 
 query GetAllArticles($limit: Int!, $skip: Int!) {
-    articleCollection(preview: true, limit: $limit, skip: $skip) {
+  articleCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
         items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            nextReview
-            owner {
-                name
-            }
-            publisher {
-                name
-            }
-            ssoProtected
-            title
-            slug
-            relatedOrgsCollection(limit: 3) {
-                total
-                items {
-                    name
-                }
-            }
-            searchable
-            stageCollection {
-                items {
-                    name
-                }
-            }
-            relatedItemsCollection(limit: 1) {
-                total
-            }
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }
 
 query GetAllSoftwares($limit: Int!, $skip: Int!) {
-    softwareCollection(preview: true, limit: $limit, skip: $skip) {
+  softwareCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
         items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            nextReview
-            owner {
-                name
-            }
-            publisher {
-                name
-            }
-            ssoProtected
-            title
-            slug
-            relatedOrgsCollection(limit: 3) {
-                total
-                items {
-                    name
-                }
-            }
-            searchable
-            stageCollection {
-                items {
-                    name
-                }
-            }
-            relatedItemsCollection(limit: 1) {
-                total
-            }
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }
 
 query GetAllOfficialDocuments($limit: Int!, $skip: Int!) {
-    officialDocumentsCollection(preview: true, limit: $limit, skip: $skip) {
-        total
-        items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            title
-        }
+  officialDocumentsCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      title
     }
+  }
 }
 
 query GetAllLinkCards($limit: Int!, $skip: Int!) {
-    linkCardCollection(preview: true, limit: $limit, skip: $skip) {
-        total
-            items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            title
-        }
+  linkCardCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      title
     }
+  }
 }
 
 query GetAllEvents($limit: Int!, $skip: Int!) {
-    eventCollection(preview: true, limit: $limit, skip: $skip) {
+  eventCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
         items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            nextReview
-            owner {
-                name
-            }
-            publisher {
-                name
-            }
-            ssoProtected
-            title
-            slug
-            relatedOrgsCollection(limit: 3) {
-                total
-                items {
-                    name
-                }
-            }
-            searchable
-            stageCollection {
-                items {
-                    name
-                }
-            }
-            relatedItemsCollection(limit: 1) {
-                total
-            }
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }
 
 query GetAllPersons($limit: Int!, $skip: Int!) {
-    personCollection(preview: true, limit: $limit, skip: $skip) {
-        total
-        items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            name
-        }
+  personCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      name
     }
+  }
 }
 
 query GetAllServices($limit: Int!, $skip: Int!) {
-    serviceCollection(preview: true, limit: $limit, skip: $skip) {
+  serviceCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
-        items{
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            nextReview
-            owner {
-                name
-            }
-            publisher {
-                name
-            }
-            ssoProtected
-            title
-            slug
-            relatedOrgsCollection(limit: 3) {
-                total
-                items {
-                    name
-                }
-            }
-            searchable
-            stageCollection {
-                items {
-                    name
-                }
-            }
-            relatedItemsCollection(limit: 1) {
-                total
-            }
+        items {
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }
 
 query GetAllVideos($limit: Int!, $skip: Int!) {
-    videoCollection(preview: true, limit: $limit, skip: $skip) {
-        total
-        items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            title
-        }
+  videoCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      title
     }
+  }
 }
 
 query GetAllCategories($limit: Int!, $skip: Int!) {
-    categoryCollection(preview: true, limit: $limit, skip: $skip) {
+  categoryCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      name
+    }
+  }
+}
+
+query GetAllEquipment($limit: Int!, $skip: Int!) {
+  equipmentCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      searchable
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
         total
         items {
-            sys {
-                id
-                publishedAt
-                firstPublishedAt
-            }
-            name
+          name
         }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
+      relatedDocsCollection(limit: 1) {
+        total
+      }
     }
+  }
 }

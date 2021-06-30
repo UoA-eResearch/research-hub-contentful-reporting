@@ -2,7 +2,7 @@ import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
+import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
 
 
 
@@ -16,22 +16,22 @@ const GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'State', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = [ 'Title', 'Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment' ];
+const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
-type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean }
-type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'State' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
+type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean };
+type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
-type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean }
-type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories'
+type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
+type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment';
 
-declare type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category'
+declare type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment';
 
 interface ContentOverviewData {
     id: string;
     title: string;
     slug: string;
-    state: 'changed' | 'published' | 'draft';
     lastUpdated: Date | null;
     nextReview: Date | null;
     owner: string;
@@ -60,6 +60,7 @@ interface ContentOverviewSummaryData {
     services: number;
     videos: number;
     categories: number;
+    equipment: number;
 }
 
 // export function to run report
@@ -76,6 +77,11 @@ export async function runContentOverview(): Promise<void> {
     await reportSheet.addRows(data.report);
 
     const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
+
+    const headerValues = await dataOverTimeSheet.headerValues;
+    if (headerValues !== overviewSheetHeaderFields) {
+        dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
+    }
     await dataOverTimeSheet.addRow(data.summary);
 }
 
@@ -110,6 +116,9 @@ function videosTotal(allVideos: GetAllVideosQuery): number {
 }
 function categoriesTotal(allCategories: GetAllCategoriesQuery): number {
     return allCategories.categoryCollection?.total ?? 0;
+}
+function equipmentTotal(allEquipment: GetAllEquipmentQuery): number {
+    return allEquipment.equipmentCollection?.total ?? 0;
 }
 
 // mapping function
@@ -301,6 +310,33 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
     });
 }
 
+function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<ContentOverviewData>[] | undefined {
+    return queryData.equipmentCollection?.items.map((item) => {
+        const rowData: Partial<ContentOverviewData> = {
+            contentType: item?.__typename,
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null,
+            id: item?.sys.id,
+            isSearchable: item?.searchable,
+            isSsoProtected: item?.ssoProtected,
+            lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
+            linkedEntries: 
+                (item?.relatedItemsCollection?.total ?? 0) +
+                (item?.relatedDocsCollection?.total ?? 0),
+            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
+            owner: item?.owner?.name ?? '',
+            publisher: item?.publisher?.name ?? '',
+            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
+            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
+            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
+            relatedOrgs: item?.relatedOrgsCollection?.total,
+            slug: item?.slug ?? '',
+            title: item?.title ?? ''
+        }
+
+        return rowData;
+    });
+}
+
 // get contentful data
 
 async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: ContentOverviewRow[] }> {
@@ -318,6 +354,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     const serviceRows = await getRows(client, GetAllServicesDocument, mapReportDataServices, servicesTotal);
     const videoRows = await getRows(client, GetAllVideosDocument, mapReportDataVideos, videosTotal);
     const categoryRows = await getRows(client, GetAllCategoriesDocument, mapReportDataCategories, categoriesTotal);
+    const equipmentRows = await getRows(client, GetAllEquipmentDocument, mapReportDataEquipment, equipmentTotal);
 
     subHubRows ? report.push(...subHubRows.data) : null;
     articleRows ? report.push(...articleRows.data) : null;
@@ -329,6 +366,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     serviceRows ? report.push(...serviceRows.data) : null;
     videoRows ? report.push(...videoRows.data) : null;
     categoryRows ? report.push(...categoryRows.data) : null;
+    equipmentRows ? report.push(...equipmentRows.data) : null;
 
     const summary: ContentOverviewSummaryData = {
         linkCards: linkCardRows?.total ?? 0,
@@ -342,6 +380,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
         softwares: softwareRows?.total ?? 0,
         subHubs: subHubRows?.total ?? 0,
         videos: videoRows?.total ?? 0,
+        equipment: equipmentRows?.total ?? 0,
         title: ''
     };
 
@@ -421,7 +460,6 @@ function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
         "Owner": data.owner ?? '',
         "Publisher": data.publisher ?? '',
         "Slug": data.slug ?? '',
-        "State": data.state ?? '',
         "Title": data.title ?? '',
         "First Published": data.firstPublishedAt?.toISOString() ?? ''
     };
@@ -440,7 +478,8 @@ function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOvervi
         Software: data.softwares,
         SubHubs: data.subHubs,
         Title: data.title,
-        Videos: data.videos
+        Videos: data.videos,
+        Equipment: data.equipment
     };
 }
 
