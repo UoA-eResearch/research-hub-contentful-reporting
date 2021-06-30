@@ -302,3 +302,45 @@ query GetAllEquipment($limit: Int!, $skip: Int!) {
     }
   }
 }
+
+query GetAllCaseStudies($limit: Int!, $skip: Int!) {
+  caseStudyCollection(limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      searchable
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
+        total
+        items {
+          name
+        }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
+      relatedDocsCollection(limit: 1) {
+        total
+      }
+    }
+  }
+}
