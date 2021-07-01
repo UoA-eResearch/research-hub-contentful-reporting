@@ -2,6 +2,7 @@ query GetPagesPerCategory {
   categoryCollection {
     items {
       name
+      displayOrder
       linkedFrom {
         fundingCollection(limit: 1) {
           total
@@ -35,6 +36,7 @@ query GetPagesPerStage {
   stageCollection {
     items {
       name
+      displayOrder
       linkedFrom {
         fundingCollection(limit: 1) {
           total

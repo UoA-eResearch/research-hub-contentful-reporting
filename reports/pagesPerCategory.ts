@@ -3,9 +3,9 @@ import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
+type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages' ];
+const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages' ];
 
 
 
@@ -42,6 +42,7 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
     return queryData.categoryCollection?.items.map((item) => {
         const row: HeaderTitleRow = {
             "Category/Stage": item?.name ?? '',
+            "Display Order": item?.displayOrder ?? '',
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
@@ -61,6 +62,7 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
     return queryData.stageCollection?.items.map((item) => {
         const row: HeaderTitleRow = {
             "Category/Stage": item?.name ?? '',
+            "Display Order": item?.displayOrder ?? '',
             Articles: item?.linkedFrom?.articleCollection?.total ?? 0,
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
