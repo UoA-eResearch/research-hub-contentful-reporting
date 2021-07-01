@@ -3,9 +3,9 @@ import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment';
+type HeaderTitle = 'Category/Stage' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment' ];
+const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages' ];
 
 
 
@@ -48,7 +48,8 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
             Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
             "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
-            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
+            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0
         }
 
         return row;
@@ -66,7 +67,8 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
             Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
             "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
-            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
+            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0
         }
 
         return row;
