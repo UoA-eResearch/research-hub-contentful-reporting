@@ -5,12 +5,12 @@ import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 const MAX_ITEMS = 50;
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment';
+type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment' ];
+const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
 
 
-export async function runPagesPerOrgUnit() {
+export async function runPagesPerOrgUnit(): Promise<void> {
     const currentReportDoc = CurrentReportDoc.instance;
 
     const data = await getData();
@@ -65,7 +65,8 @@ function mapData(data: GetPagesPerOrgUnitQuery): HeaderTitleRow[] {
             Events: item?.linkedFrom?.eventCollection?.total ?? 0,
             Services: item?.linkedFrom?.serviceCollection?.total ?? 0,
             Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
-            SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0
+            SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
+            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0
         };
 
         return row;

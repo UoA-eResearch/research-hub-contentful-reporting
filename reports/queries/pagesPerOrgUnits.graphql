@@ -4,9 +4,9 @@ query GetPagesPerOrgUnit($limit: Int!, $skip: Int) {
   	items {
       name
       linkedFrom {
-        # fundingCollection(limit: 1) {
-        #   total
-		# }
+        fundingCollection(limit: 1) {
+          total
+		}
         caseStudyCollection(limit: 1) {
           total
         }
