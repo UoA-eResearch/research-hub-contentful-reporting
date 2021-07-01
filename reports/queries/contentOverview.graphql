@@ -344,3 +344,45 @@ query GetAllCaseStudies($limit: Int!, $skip: Int!) {
     }
   }
 }
+
+query GetAllFundingPages($limit: Int!, $skip: Int!) {
+  fundingCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      nextReview
+      owner {
+        name
+      }
+      publisher {
+        name
+      }
+      searchable
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 3) {
+        total
+        items {
+          name
+        }
+      }
+      searchable
+      stageCollection {
+        items {
+          name
+        }
+      }
+      relatedItemsCollection(limit: 1) {
+        total
+      }
+      relatedDocsCollection(limit: 1) {
+        total
+      }
+    }
+  }
+}
