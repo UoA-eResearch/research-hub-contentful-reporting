@@ -39,8 +39,8 @@ provider:
   environment:
     CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
     CONTENTFUL_CONTENT_DELIVERY_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_CONTENT_DELIVERY_TOKEN}
-    GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/gserviceaccount.json):client_email}
-    GOOGLE_PRIVATE_KEY: ${file(env/gserviceaccount.json):private_key}
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_EMAIL}
+    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
 
 functions:
   # graph:
