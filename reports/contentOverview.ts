@@ -2,7 +2,7 @@ import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
+import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
 
 
 
@@ -417,7 +417,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     const videoRows = await getRows(client, GetAllVideosDocument, mapReportDataVideos, videosTotal);
     const categoryRows = await getRows(client, GetAllCategoriesDocument, mapReportDataCategories, categoriesTotal);
     const equipmentRows = await getRows(client, GetAllEquipmentDocument, mapReportDataEquipment, equipmentTotal);
-    const caseStudyRows = await getRows(client, GetAllCategoriesDocument, mapReportDataCaseStudies, caseStudiesTotal);
+    const caseStudyRows = await getRows(client, GetAllCaseStudiesDocument, mapReportDataCaseStudies, caseStudiesTotal);
     const fundingRows = await getRows(client, GetAllFundingPagesDocument, mapReportDataFundingPages, fundingPagesTotal);
 
     subHubRows ? report.push(...subHubRows.data) : null;
