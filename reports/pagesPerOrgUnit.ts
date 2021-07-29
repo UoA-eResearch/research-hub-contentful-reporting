@@ -2,7 +2,7 @@ import { getApolloClient } from "../apolloClient";
 import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 
-const MAX_ITEMS = 50;
+const MAX_ITEMS = 10;
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
 type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
