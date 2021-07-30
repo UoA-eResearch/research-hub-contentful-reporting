@@ -2,7 +2,7 @@ import { getApolloClient } from "../apolloClient";
 import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 
-const MAX_ITEMS = 10;
+let MAX_ITEMS = 10;
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
 type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
@@ -10,7 +10,11 @@ type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 
 const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
 
 
-export async function runPagesPerOrgUnit(): Promise<void> {
+export async function runPagesPerOrgUnit(chunkSize?: number): Promise<void> {
+    if (chunkSize) {
+        MAX_ITEMS = chunkSize;
+    }
+
     const currentReportDoc = CurrentReportDoc.instance;
 
     const data = await getData();

@@ -9,9 +9,9 @@ import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
 
 export async function contentful(): Promise<APIGatewayProxyResult> {
     try {
-        await runContentOverview();
+        await runContentOverview(50);
         await runPagesPerCategory();
-        await runPagesPerOrgUnit();
+        await runPagesPerOrgUnit(10);
 
         return {
             statusCode: 200,

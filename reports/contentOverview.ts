@@ -10,7 +10,7 @@ import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesDocument,
  * Contentful graphql URI
  * also maybe put this in parameter store ???
  */
-const GRAPHQL_CHUNK_SIZE = 50;
+let GRAPHQL_CHUNK_SIZE = 50;
 
 /**
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
@@ -67,7 +67,11 @@ interface ContentOverviewSummaryData {
 
 // export function to run report
 
-export async function runContentOverview(): Promise<void> {
+export async function runContentOverview(chunkSize?: number): Promise<void> {
+    if (chunkSize) {
+        GRAPHQL_CHUNK_SIZE = chunkSize;
+    }
+
     const currentReportDoc = CurrentReportDoc.instance;
     const dataOverTimeDoc = DataOverTimeDoc.instance;
 
