@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject, HttpLink } from '@apollo/client/core';
 import { fetch } from 'cross-fetch';
 
-const CONTENTFUL_GRAPHQL_URI = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}`
+const CONTENTFUL_GRAPHQL_URI = `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_SPACE_ENV}`
 
 export function getApolloClient(): ApolloClient<NormalizedCacheObject> {
     const authToken = process.env.CONTENTFUL_CONTENT_DELIVERY_TOKEN;

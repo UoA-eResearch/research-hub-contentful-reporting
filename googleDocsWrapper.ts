@@ -1,5 +1,4 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
-import * as googleDocsConfig from "./googleDocsConfig.json";
 
 export type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages Per Category' | 'Pages Per Org Unit';
 export type DataOverTimeWorkSheet = 'Content Types';
@@ -40,7 +39,10 @@ export class CurrentReportDoc extends GoogleDoc {
     }
 
     private constructor() {
-        super(googleDocsConfig.CURRENT_REPORT_SPREADSHEET_ID);
+        if (!process.env.CURRENT_REPORT_SPREADSHEET_ID) {
+            throw('Could not find current-report sheet id');
+        }
+        super(process.env.CURRENT_REPORT_SPREADSHEET_ID);
     }
 
     public async getSheet(sheetTitle: CurrentReportWorkSheet): Promise<GoogleSpreadsheetWorksheet> {
@@ -60,7 +62,10 @@ export class DataOverTimeDoc extends GoogleDoc {
     }
 
     private constructor() {
-        super(googleDocsConfig.DATA_OVER_TIME_SPREADSHEET_ID);
+        if(!process.env.DATA_OVER_TIME_SPREADSHEET_ID) {
+            throw('Could not find data-over-time sheet id')
+        }
+        super(process.env.DATA_OVER_TIME_SPREADSHEET_ID);
     }
 
     public async getSheet(sheetTitle: DataOverTimeWorkSheet): Promise<GoogleSpreadsheetWorksheet> {

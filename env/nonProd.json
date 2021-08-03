@@ -1,13 +1,13 @@
 {
     "awsAccountId": "518380838815",
     "resourceKey": "key/891f7417-3a6e-4152-b6d5-c37433acae54",
-    "CONTENTFUL_SPACE_ENV": "dev",
+    "CONTENTFUL_SPACE_ENV": "prod",
     "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/dev/research-hub/contentful-mgmt-access-token~true}",
     "CONTENTFUL_SPACE_ID": "${ssm:/dev/research-hub/contentful-space-id~true}",
-    "BUCKET_NAME": "researchhub-contentful-backup-dev",
+    "BUCKET_NAME": "researchhub-contentful-backup-test",
     "CONTENTFUL_CONTENT_DELIVERY_TOKEN": "${ssm:/dev/research-hub/contentful-preview-access-token~true}",
     "GOOGLE_SERVICE_ACCOUNT_EMAIL": "${ssm:/dev/research-hub/google-service-account-client-email}",
     "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY": "${ssm:/dev/research-hub/google-service-account-private-key~true}",
-    "CURRENT_REPORT_SPREADSHEET_ID": "1xa6IQhYpAJubJQZXePFVoc4R31JWUh2wSGxMoPrHBuc",
-    "DATA_OVER_TIME_SPREADSHEET_ID": "1U7g9pbr9G_sXaKJZ_3l_KqDMCzv3N86CRRxju9g6msg"
+    "CURRENT_REPORT_SPREADSHEET_ID": "1nbAdxyJnIv3weX4wszx4bETAFh7-eet-eS_I-ZYMVbU",
+    "DATA_OVER_TIME_SPREADSHEET_ID": "1lIyffGQjFdbdxSVIYoskSTTSotpvZdX5WYqTVOCiARQ"
 }

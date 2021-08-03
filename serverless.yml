@@ -38,10 +38,13 @@ provider:
     Faculty: ${self:custom.Faculty}
   environment:
     CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
+    CONTENTFUL_SPACE_ENV: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ENV}
     CONTENTFUL_CONTENT_DELIVERY_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_CONTENT_DELIVERY_TOKEN}
     GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_EMAIL}
     GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
     BUCKET_NAME: ${file(env/${self:provider.stage}.json):BUCKET_NAME}
+    CURRENT_REPORT_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):CURRENT_REPORT_SPREADSHEET_ID}
+    DATA_OVER_TIME_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):DATA_OVER_TIME_SPREADSHEET_ID}
 
 functions:
   # graph:
