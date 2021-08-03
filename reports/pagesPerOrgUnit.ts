@@ -1,4 +1,5 @@
 import { getApolloClient } from "../apolloClient";
+import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 
@@ -19,7 +20,9 @@ export async function runPagesPerOrgUnit(chunkSize?: number): Promise<void> {
 
     const data = await getData();
 
-    const reportSheet = await currentReportDoc.getSheet('Pages/Org Unit');
+    uploadCsv(data, 'Pages Per Org Unit')
+
+    const reportSheet = await currentReportDoc.getSheet('Pages Per Org Unit');
     await reportSheet.clear();
     await reportSheet.setHeaderRow(sheetHeaderFields);
     await reportSheet.addRows(data);

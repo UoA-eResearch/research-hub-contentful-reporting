@@ -1,8 +1,8 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import * as googleDocsConfig from "./googleDocsConfig.json";
 
-type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages/Category' | 'Pages/Org Unit';
-type DataOverTimeWorkSheet = 'Content Types';
+export type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages Per Category' | 'Pages Per Org Unit';
+export type DataOverTimeWorkSheet = 'Content Types';
 
 class GoogleDoc {
     public doc: GoogleSpreadsheet;

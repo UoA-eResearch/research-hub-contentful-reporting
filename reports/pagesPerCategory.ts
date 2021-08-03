@@ -1,4 +1,5 @@
 import { getApolloClient } from "../apolloClient";
+import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
@@ -14,7 +15,9 @@ export async function runPagesPerCategory(): Promise<void> {
 
     const data = await getData();
 
-    const reportSheet = await currentReportDoc.getSheet('Pages/Category');
+    uploadCsv(data, 'Pages Per Category')
+
+    const reportSheet = await currentReportDoc.getSheet('Pages Per Category');
     await reportSheet.clear();
     await reportSheet.setHeaderRow(sheetHeaderFields);
     await reportSheet.addRows(data);

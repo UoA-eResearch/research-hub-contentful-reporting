@@ -4,7 +4,7 @@
     "CONTENTFUL_SPACE_ENV": "${ssm:/dev/research-hub/contentful-space-env~true}",
     "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/dev/research-hub/contentful-mgmt-access-token~true}",
     "CONTENTFUL_SPACE_ID": "${ssm:/dev/research-hub/contentful-space-id~true}",
-    "BUCKET_NAME": "researchhub-contentful-backup",
+    "BUCKET_NAME": "researchhub-contentful-backup-test",
     "CONTENTFUL_CONTENT_DELIVERY_TOKEN": "${ssm:/dev/research-hub/contentful-preview-access-token~true}",
     "GOOGLE_SERVICE_ACCOUNT_EMAIL": "${ssm:/dev/research-hub/google-service-account-client-email}",
     "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY": "${ssm:/dev/research-hub/google-service-account-private-key~true}"

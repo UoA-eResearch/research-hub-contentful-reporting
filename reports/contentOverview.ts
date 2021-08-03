@@ -3,8 +3,7 @@ import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
-
-
+import { uploadCsv } from "../csvUpload";
 
 /**
  * Contentful graphql URI
@@ -16,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = [ 'Title', 'Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages' ];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = [ 'Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages' ];
 const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
@@ -24,7 +23,7 @@ type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number
 type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
-type ContentOverviewSummaryTitle = 'Title' | 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages';
+type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages';
 
 declare type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding';
 
@@ -48,7 +47,6 @@ interface ContentOverviewData {
 }
 
 interface ContentOverviewSummaryData {
-    title: string;
     date: Date;
     subHubs: number;
     articles: number;
@@ -77,6 +75,9 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
 
     const data = await getData();
 
+    // upload to S3 bucket in the background
+    uploadCsv(data.report, 'Content Overview');
+
     const reportSheet = await currentReportDoc.getSheet('Content Overview');
     await reportSheet.clear();
     await reportSheet.setHeaderRow(sheetHeaderFields);
@@ -84,11 +85,36 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
 
     const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
 
-    const headerValues = await dataOverTimeSheet.headerValues;
+    const headerValues = dataOverTimeSheet.headerValues;
     if (headerValues !== overviewSheetHeaderFields) {
         dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
     }
     await dataOverTimeSheet.addRow(data.summary);
+
+    // get data over time values from sheet and convert to ContentOverviewSummaryRow[] for csv upload
+    const dotsRows = (await dataOverTimeSheet.getRows()).map((row) => {
+        const summaryRow: ContentOverviewSummaryRow = {
+            Date: row.Date,
+            SubHubs: row.SubHubs ?? 0,
+            Articles: row.Articles ?? 0,
+            Software: row.Software ?? 0,
+            "Official Documents": row["Official Documents"] ?? 0,
+            "Link Cards": row["Link Cards"] ?? 0,
+            Events: row.Events ?? 0,
+            Persons: row.Persons ?? 0,
+            Services: row.Services ?? 0,
+            Videos: row.Videos ?? 0,
+            Categories: row.Categories ?? 0,
+            Equipment: row.Equipment ?? 0,
+            CaseStudies: row.CaseStudies ?? 0,
+            "Funding Pages": row["Funding Pages"] ?? 0
+        }
+
+        return summaryRow;
+    })
+
+    //upload to S3 bucket in the background
+    uploadCsv(dotsRows, 'Content Types')
 }
 
 // get totals functions
@@ -453,7 +479,6 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
         equipment: equipmentRows?.total ?? 0,
         caseStudies: caseStudyRows?.total ?? 0,
         fundingPages: fundingRows?.total ?? 0,
-        title: ''
     };
 
     return {
@@ -549,7 +574,6 @@ function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOvervi
         Services: data.services,
         Software: data.softwares,
         SubHubs: data.subHubs,
-        Title: data.title,
         Videos: data.videos,
         Equipment: data.equipment,
         CaseStudies: data.caseStudies,
