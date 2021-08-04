@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client/core";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { runContentOverview } from "./reports/contentOverview";
 import { runPagesPerCategory } from "./reports/pagesPerCategory";
@@ -19,16 +18,10 @@ export async function contentful(): Promise<APIGatewayProxyResult> {
         }
     }
     catch (e) {
-        if (e instanceof ApolloError) {
-            return {
-                statusCode: 400,
-                body: JSON.stringify(e)
-            }
-        } else {
-            return {
-                statusCode: 400,
-                body: JSON.stringify(e.message)
-            }
+        console.error(e.message);
+        return {
+            statusCode: 400,
+            body: JSON.stringify('An error occurred. Please check log files.')
         }
     }
 }

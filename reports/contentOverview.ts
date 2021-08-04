@@ -1,5 +1,5 @@
 import { getApolloClient } from "../apolloClient";
-import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, ApolloError, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
@@ -70,51 +70,60 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         GRAPHQL_CHUNK_SIZE = chunkSize;
     }
 
-    const currentReportDoc = CurrentReportDoc.instance;
-    const dataOverTimeDoc = DataOverTimeDoc.instance;
+    try {
+        const currentReportDoc = CurrentReportDoc.instance;
+        const dataOverTimeDoc = DataOverTimeDoc.instance;
 
-    const data = await getData();
 
-    // upload to S3 bucket in the background
-    uploadCsv(data.report, 'Content Overview');
+        const data = await getData();
 
-    const reportSheet = await currentReportDoc.getSheet('Content Overview');
-    await reportSheet.clear();
-    await reportSheet.setHeaderRow(sheetHeaderFields);
-    await reportSheet.addRows(data.report);
 
-    const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
+        // upload to S3 bucket in the background
+        uploadCsv(data.report, 'Content Overview');
 
-    const headerValues = dataOverTimeSheet.headerValues;
-    if (headerValues !== overviewSheetHeaderFields) {
-        dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
-    }
-    await dataOverTimeSheet.addRow(data.summary);
+        const reportSheet = await currentReportDoc.getSheet('Content Overview');
+        await reportSheet.clear();
+        await reportSheet.setHeaderRow(sheetHeaderFields);
+        await reportSheet.addRows(data.report);
 
-    // get data over time values from sheet and convert to ContentOverviewSummaryRow[] for csv upload
-    const dotsRows = (await dataOverTimeSheet.getRows()).map((row) => {
-        const summaryRow: ContentOverviewSummaryRow = {
-            Date: row.Date,
-            SubHubs: row.SubHubs ?? 0,
-            Articles: row.Articles ?? 0,
-            Software: row.Software ?? 0,
-            "Official Documents": row["Official Documents"] ?? 0,
-            "Link Cards": row["Link Cards"] ?? 0,
-            Events: row.Events ?? 0,
-            Persons: row.Persons ?? 0,
-            Services: row.Services ?? 0,
-            Videos: row.Videos ?? 0,
-            Categories: row.Categories ?? 0,
-            Equipment: row.Equipment ?? 0,
-            CaseStudies: row.CaseStudies ?? 0,
-            "Funding Pages": row["Funding Pages"] ?? 0
+        const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
+
+        const headerValues = dataOverTimeSheet.headerValues;
+        if (headerValues !== overviewSheetHeaderFields) {
+            dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
         }
+        await dataOverTimeSheet.addRow(data.summary);
 
-        return summaryRow;
-    })
+        // get data over time values from sheet and convert to ContentOverviewSummaryRow[] for csv upload
+        const dotsRows = (await dataOverTimeSheet.getRows()).map((row) => {
+            const summaryRow: ContentOverviewSummaryRow = {
+                Date: row.Date,
+                SubHubs: row.SubHubs ?? 0,
+                Articles: row.Articles ?? 0,
+                Software: row.Software ?? 0,
+                "Official Documents": row["Official Documents"] ?? 0,
+                "Link Cards": row["Link Cards"] ?? 0,
+                Events: row.Events ?? 0,
+                Persons: row.Persons ?? 0,
+                Services: row.Services ?? 0,
+                Videos: row.Videos ?? 0,
+                Categories: row.Categories ?? 0,
+                Equipment: row.Equipment ?? 0,
+                CaseStudies: row.CaseStudies ?? 0,
+                "Funding Pages": row["Funding Pages"] ?? 0
+            }
 
-    //upload to S3 bucket in the background
-    uploadCsv(dotsRows, 'Content Types')
+            return summaryRow;
+        })
+
+        //upload to S3 bucket in the background
+        uploadCsv(dotsRows, 'Content Types')
+    } catch (e) {
+        if (e instanceof ApolloError) {
+            console.error('Error in Content Overview report: ' + e.graphQLErrors + e.message);
+        }
+        throw e;
+    }
 }
 
 // get totals functions

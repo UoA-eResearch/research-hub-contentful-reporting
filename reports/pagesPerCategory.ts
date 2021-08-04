@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client/core";
 import { getApolloClient } from "../apolloClient";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
@@ -11,16 +12,23 @@ const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'Display Order', 'S
 
 
 export async function runPagesPerCategory(): Promise<void> {
-    const currentReportDoc = CurrentReportDoc.instance;
+    try {
+        const currentReportDoc = CurrentReportDoc.instance;
 
-    const data = await getData();
+        const data = await getData();
 
-    uploadCsv(data, 'Pages Per Category')
+        uploadCsv(data, 'Pages Per Category')
 
-    const reportSheet = await currentReportDoc.getSheet('Pages Per Category');
-    await reportSheet.clear();
-    await reportSheet.setHeaderRow(sheetHeaderFields);
-    await reportSheet.addRows(data);
+        const reportSheet = await currentReportDoc.getSheet('Pages Per Category');
+        await reportSheet.clear();
+        await reportSheet.setHeaderRow(sheetHeaderFields);
+        await reportSheet.addRows(data);
+    } catch (e) {
+        if (e instanceof ApolloError) {
+            console.error('Error in Pages Per Category report: ' + e.graphQLErrors + e.message);
+        }
+        throw e;
+    }
 }
 
 async function getData(): Promise<HeaderTitleRow[]> {
