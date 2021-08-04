@@ -45,24 +45,23 @@ provider:
     BUCKET_NAME: ${file(env/${self:provider.stage}.json):BUCKET_NAME}
     CURRENT_REPORT_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):CURRENT_REPORT_SPREADSHEET_ID}
     DATA_OVER_TIME_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):DATA_OVER_TIME_SPREADSHEET_ID}
+  apiGateway:
+    apiKeySourceType: HEADER
+  apiKeys:
+    - name: ${self:service}-${self:provider.stage}-apiKey
+
 
 functions:
-  # graph:
-  #   handler: graph.main
-  #   timeout: 500
-  #   events:
-  #    - http:
-  #       path: /graph
-  #       method: get
-  #       cors: true
-  contentfulTest:
+  runReports:
     handler: contentfulReport.contentful
     timeout: 500
     events:
-     - http:
-        path: /report/contentfulTest
-        method: GET
-        cors: true
+      - http:
+          path: /
+          method: POST
+          cors: true
+          private: true
+      - schedule: cron(0 11 * * ? *)
 
 plugins:
   - serverless-plugin-typescript
