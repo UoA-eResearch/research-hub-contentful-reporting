@@ -117,3 +117,8 @@ resources:
                           - Ref: "AWS::Region"
                           - Ref: "AWS::AccountId"
                           - "${file(env/${self:provider.stage}.json):resourceKey}"
+                - Effect: Allow
+                  Action:
+                    - "s3:PutObject"
+                  Resource:
+                    - "arn:aws:s3:::${file(env/${self:provider.stage}.json):BUCKET_NAME}/*"
