@@ -18,11 +18,12 @@ export async function contentful(): Promise<APIGatewayProxyResult> {
         }
     }
     catch (e) {
-        console.error(e.message);
+        if (e instanceof Error) {
+            console.error(e.message);
+        }
         return {
             statusCode: 400,
             body: JSON.stringify('An error occurred. Please check log files.')
         }
     }
 }
-    

@@ -1,63 +1,92 @@
-import { APIGatewayProxyEvent, Context, APIGatewayProxyResult } from 'aws-lambda'
-import { createClient } from 'contentful-management'
-import { ClientAPI } from 'contentful-management/dist/typings/create-contentful-api'
-import { Environment } from 'contentful-management/dist/typings/entities/environment'
-import { Space } from 'contentful-management/dist/typings/entities/space'
-import { ContentType, Entry } from 'contentful-management/dist/typings/export-types'
+import { APIGatewayProxyResult } from "aws-lambda";
+import { ClientAPI, createClient, Entry, Environment, Space } from "contentful-management";
 
-const CONTENTFUL_ACCESS_TOKEN = ''
-const CONTENTFUL_SPACE_ID = 'vbuxn5csp0ik'
-const CONTENTFUL_ENVIRONMENT = 'dev'
+export type ContentType
+    = 'article'
+    | 'caseStudy'
+    | 'equipment'
+    | 'event'
+    | 'funding'
+    | 'service'
+    | 'software'
+    | 'subHub'
 
-interface Node {
-    id: string
+const contentTypes: ContentType[] = ['article', 'caseStudy', 'equipment', 'event', 'funding', 'service', 'software', 'subHub']
+
+export interface ContentNode {
+    id: string,
+    name: string,
+    slug: string,
+    type: string
 }
 
-interface Link {
-    source: string,
-    target: string
+export interface ContentLink {
+    from: string,
+    to: string
 }
 
-export async function main (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
-    let result: APIGatewayProxyResult;
+export interface ContentGraph {
+    nodes: ContentNode[],
+    links: ContentLink[]
+}
 
+export async function main(): Promise<APIGatewayProxyResult> {
     try {
-        const client: ClientAPI = await createClient({accessToken: CONTENTFUL_ACCESS_TOKEN});
-        const space: Space = await client.getSpace(CONTENTFUL_SPACE_ID);
-        const environment: Environment = await space.getEnvironment(CONTENTFUL_ENVIRONMENT);
-        const contentTypes: ContentType[] = (await environment.getContentTypes()).items;
-        const subHubs: Entry[] = (await environment.getEntries({ content_type: 'article' })).items;
-
         return {
             statusCode: 200,
-            body: JSON.stringify(subHubs[0])
-        };  
-
+            body: JSON.stringify(await getGraph()),
+        }
     }
     catch (e) {
+        if (e instanceof Error) {
+            console.error(e.message);
+        }
         return {
-            statusCode: 400,
-            body: JSON.stringify(e)
+            statusCode: 500,
+            body: JSON.stringify('An error occurred. Please check log files.')
         }
     }
 }
 
-function makeGraph(entries: Entry[]): { nodes: Node[], links: Link[] } {
-    const nodes: Node[] = [];
-    const links: Link[] = [];
+async function getGraph(): Promise<ContentGraph> {
+    if (!process.env.CONTENTFUL_MGMT_ACCESS_TOKEN) throw Error('No delivery token found');
+    if (!process.env.CONTENTFUL_SPACE_ID) throw Error('No space ID found');
+    if (!process.env.CONTENTFUL_SPACE_ENV) throw Error('No environment found');
 
-    entries.forEach((entry: Entry) => {
-        nodes.push({id: entry.sys.id});
+    const client: ClientAPI = createClient({ accessToken: process.env.CONTENTFUL_MGMT_ACCESS_TOKEN });
+    const space: Space = await client.getSpace(process.env.CONTENTFUL_SPACE_ID);
+    const environment: Environment = await space.getEnvironment(process.env.CONTENTFUL_SPACE_ENV);
 
-        if (entry.fields.hasOwnProperty('relatedContent')) {
-
-        }
-    })
-
-    return {
-        nodes,
-        links
+    const entries: Entry[] = [];
+    for (const type of contentTypes) {
+        const entriesOfType: Entry[] = (await environment.getEntries({ content_type: type, 'fields.searchable': 'true', select: 'sys.id,fields.title,fields.slug,sys.contentType,fields.relatedItems' })).items;
+        entries.push(...entriesOfType);
     }
+
+    const nodes: ContentNode[] = [];
+    const links: ContentLink[] = [];
+    for (const entry of entries) {
+        const node: ContentNode = {
+            id: entry.sys.id,
+            name: entry.fields.title ? entry.fields.title['en-US'] : '',
+            slug: entry.fields.slug ? entry.fields.slug['en-US'] : '',
+            type: entry.sys.contentType.sys.id
+        }
+
+        nodes.push(node);
+
+        const relatedItemLinks: ContentLink[] = [];
+        for (const linkedItem of (entry.fields.relatedItems ? entry.fields.relatedItems['en-US'] : [])) {
+            const link: ContentLink = {
+                from: entry.sys.id,
+                to: linkedItem.sys.id
+            }
+
+            relatedItemLinks.push(link);
+        }
+
+        links.push(...relatedItemLinks);
+    }
+
+    return { nodes, links }
 }
-
-

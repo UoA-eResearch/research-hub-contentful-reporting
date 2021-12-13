@@ -2,7 +2,7 @@
     "awsAccountId": "518380838815",
     "resourceKey": "key/891f7417-3a6e-4152-b6d5-c37433acae54",
     "CONTENTFUL_SPACE_ENV": "dev",
-    "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/dev/research-hub/contentful-mgmt-access-token~true}",
+    "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/test/research-hub/contentful-mgmt-access-token~true}",
     "CONTENTFUL_SPACE_ID": "${ssm:/dev/research-hub/contentful-space-id~true}",
     "BUCKET_NAME": "researchhub-contentful-backup-dev",
     "CONTENTFUL_CONTENT_DELIVERY_TOKEN": "${ssm:/dev/research-hub/contentful-preview-access-token~true}",

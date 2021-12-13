@@ -20,7 +20,7 @@ provider:
   role: myLambdaRole
   tags:
     ResearchHub: ${self:custom.ResearchHub}
-    BusinessService:  ${self:custom.BusinessService}
+    BusinessService: ${self:custom.BusinessService}
     Department: ${self:custom.Department}
     ProjectCode: ${self:custom.ProjectCode}
     WikiLink: ${self:custom.WikiLink}
@@ -29,7 +29,7 @@ provider:
     Faculty: ${self:custom.Faculty}
   stackTags:
     ResearchHub: ${self:custom.ResearchHub}
-    BusinessService:  ${self:custom.BusinessService}
+    BusinessService: ${self:custom.BusinessService}
     Department: ${self:custom.Department}
     ProjectCode: ${self:custom.ProjectCode}
     WikiLink: ${self:custom.WikiLink}
@@ -40,6 +40,7 @@ provider:
     CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
     CONTENTFUL_SPACE_ENV: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ENV}
     CONTENTFUL_CONTENT_DELIVERY_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_CONTENT_DELIVERY_TOKEN}
+    CONTENTFUL_MGMT_ACCESS_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_MGMT_ACCESS_TOKEN}
     GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_EMAIL}
     GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
     BUCKET_NAME: ${file(env/${self:provider.stage}.json):BUCKET_NAME}
@@ -50,8 +51,16 @@ provider:
   apiKeys:
     - name: ${self:service}-${self:provider.stage}-apiKey
 
-
 functions:
+  getGraph:
+    handler: graph.main
+    timeout: 500
+    events:
+      - http:
+          path: /graph
+          method: GET
+          cors: true
+          private: false
   runReports:
     handler: contentfulReport.contentful
     timeout: 500
