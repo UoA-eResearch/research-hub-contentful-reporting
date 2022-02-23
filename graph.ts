@@ -11,7 +11,17 @@ export type ContentType
     | 'software'
     | 'subHub'
 
-const contentTypes: ContentType[] = ['article', 'caseStudy', 'equipment', 'event', 'funding', 'service', 'software', 'subHub']
+const defaultSelectQuery = 'sys.id,fields.title,fields.slug,sys.contentType,fields.relatedItems';
+const queryMap: Map<ContentType, string> = new Map([
+    ['article', defaultSelectQuery],
+    ['caseStudy', defaultSelectQuery],
+    ['equipment', defaultSelectQuery],
+    ['event', defaultSelectQuery],
+    ['funding', defaultSelectQuery],
+    ['service', defaultSelectQuery],
+    ['software', defaultSelectQuery],
+    ['subHub', defaultSelectQuery + ',fields.internalPages,fields.externalPages']
+]);
 
 export interface ContentNode {
     id: string,
@@ -21,8 +31,8 @@ export interface ContentNode {
 }
 
 export interface ContentLink {
-    from: string,
-    to: string
+    source: string,
+    target: string
 }
 
 export interface ContentGraph {
@@ -40,10 +50,16 @@ export async function main(): Promise<APIGatewayProxyResult> {
     catch (e) {
         if (e instanceof Error) {
             console.error(e.message);
-        }
-        return {
-            statusCode: 500,
-            body: JSON.stringify('An error occurred. Please check log files.')
+            return {
+                statusCode: 500,
+                body: JSON.stringify(e.message)
+            }
+        } else {
+            console.error(e);
+            return {
+                statusCode: 500,
+                body: 'An unknown error has occurred\n' + JSON.stringify(e)
+            }
         }
     }
 }
@@ -58,8 +74,14 @@ async function getGraph(): Promise<ContentGraph> {
     const environment: Environment = await space.getEnvironment(process.env.CONTENTFUL_SPACE_ENV);
 
     const entries: Entry[] = [];
-    for (const type of contentTypes) {
-        const entriesOfType: Entry[] = (await environment.getEntries({ content_type: type, 'fields.searchable': 'true', select: 'sys.id,fields.title,fields.slug,sys.contentType,fields.relatedItems' })).items;
+    for (const type of queryMap.keys()) {
+        const entriesOfType: Entry[] = (await environment.getEntries({
+            limit: 1000,
+            content_type: type,
+            'fields.searchable': 'true',
+            'sys.publishedAt[exists]': true,
+            select: queryMap.get(type)
+        })).items;
         entries.push(...entriesOfType);
     }
 
@@ -78,15 +100,30 @@ async function getGraph(): Promise<ContentGraph> {
         const relatedItemLinks: ContentLink[] = [];
         for (const linkedItem of (entry.fields.relatedItems ? entry.fields.relatedItems['en-US'] : [])) {
             const link: ContentLink = {
-                from: entry.sys.id,
-                to: linkedItem.sys.id
+                source: entry.sys.id,
+                target: linkedItem.sys.id
             }
 
             relatedItemLinks.push(link);
         }
 
+        if (entry.sys.contentType.sys.id === 'subHub') {
+            const collection = [
+                ...(entry.fields.internalPages ? entry.fields.internalPages['en-US'] : []),
+                ...(entry.fields.externalPages ? entry.fields.externalPages['en-US'] : [])
+            ]
+            for (const page of collection) {
+                const pageLink: ContentLink = {
+                    source: entry.sys.id,
+                    target: page.sys.id
+                }
+
+                relatedItemLinks.push(pageLink);
+            }
+        }
+
         links.push(...relatedItemLinks);
     }
 
-    return { nodes, links }
+    return { nodes, links: links.filter(link => nodes.map(node => node.id).includes(link.target)) }
 }
