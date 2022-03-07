@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from "aws-lambda";
 import { ClientAPI, createClient, Entry, Environment, Space } from "contentful-management";
 
-export type ContentType
+type ContentType
     = 'article'
     | 'caseStudy'
     | 'equipment'
@@ -23,19 +23,19 @@ const queryMap: Map<ContentType, string> = new Map([
     ['subHub', defaultSelectQuery + ',fields.internalPages,fields.externalPages']
 ]);
 
-export interface ContentNode {
+interface ContentNode {
     id: string,
     name: string,
     slug: string,
     type: string
 }
 
-export interface ContentLink {
+interface ContentLink {
     source: string,
     target: string
 }
 
-export interface ContentGraph {
+interface ContentGraph {
     nodes: ContentNode[],
     links: ContentLink[]
 }
@@ -58,7 +58,7 @@ export async function main(): Promise<APIGatewayProxyResult> {
             console.error(e);
             return {
                 statusCode: 500,
-                body: 'An unknown error has occurred\n' + JSON.stringify(e)
+                body: 'An unknown error occurred\n' + JSON.stringify(e)
             }
         }
     }
@@ -86,7 +86,7 @@ async function getGraph(): Promise<ContentGraph> {
     }
 
     const nodes: ContentNode[] = [];
-    const links: ContentLink[] = [];
+    let links: ContentLink[] = [];
     for (const entry of entries) {
         const node: ContentNode = {
             id: entry.sys.id,
@@ -125,5 +125,8 @@ async function getGraph(): Promise<ContentGraph> {
         links.push(...relatedItemLinks);
     }
 
-    return { nodes, links: links.filter(link => nodes.map(node => node.id).includes(link.target)) }
+    // filter out links with a target node that isn't in the list of nodes
+    links = links.filter(link => nodes.map(node => node.id).includes(link.target));
+
+    return { nodes, links };
 }
