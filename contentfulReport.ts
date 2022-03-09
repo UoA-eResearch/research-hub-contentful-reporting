@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult } from "aws-lambda";
-import { runContentGraph } from "./reports/contentGraph";
+import { runContentGraphReports } from "./reports/contentGraph";
 import { runContentOverview } from "./reports/contentOverview";
 import { runPagesPerCategory } from "./reports/pagesPerCategory";
 import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
@@ -12,7 +12,7 @@ export async function contentful(): Promise<APIGatewayProxyResult> {
         await runContentOverview(50);
         await runPagesPerCategory();
         await runPagesPerOrgUnit(10);
-        await runContentGraph();
+        await runContentGraphReports();
 
         return {
             statusCode: 200,

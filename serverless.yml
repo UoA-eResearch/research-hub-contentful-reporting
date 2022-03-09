@@ -60,7 +60,7 @@ functions:
           path: /graph
           method: GET
           cors: true
-          private: false
+          private: true
   runReports:
     handler: contentfulReport.contentful
     timeout: 500
