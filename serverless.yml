@@ -53,7 +53,7 @@ provider:
 
 functions:
   getGraph:
-    handler: graph.main
+    handler: graph.getGraph
     timeout: 500
     events:
       - http:

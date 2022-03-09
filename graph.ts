@@ -23,28 +23,28 @@ const queryMap: Map<ContentType, string> = new Map([
     ['subHub', defaultSelectQuery + ',fields.internalPages,fields.externalPages']
 ]);
 
-interface ContentNode {
+export interface ContentNode {
     id: string,
     name: string,
     slug: string,
     type: string
 }
 
-interface ContentLink {
+export interface ContentLink {
     source: string,
     target: string
 }
 
-interface ContentGraph {
+export interface ContentGraph {
     nodes: ContentNode[],
     links: ContentLink[]
 }
 
-export async function main(): Promise<APIGatewayProxyResult> {
+export async function getGraph(): Promise<APIGatewayProxyResult> {
     try {
         return {
             statusCode: 200,
-            body: JSON.stringify(await getGraph()),
+            body: JSON.stringify(await generateContentGraph()),
         }
     }
     catch (e) {
@@ -57,14 +57,14 @@ export async function main(): Promise<APIGatewayProxyResult> {
         } else {
             console.error(e);
             return {
-                statusCode: 500,
+                statusCode: 400,
                 body: 'An unknown error occurred\n' + JSON.stringify(e)
             }
         }
     }
 }
 
-async function getGraph(): Promise<ContentGraph> {
+export async function generateContentGraph(): Promise<ContentGraph> {
     if (!process.env.CONTENTFUL_MGMT_ACCESS_TOKEN) throw Error('No delivery token found');
     if (!process.env.CONTENTFUL_SPACE_ID) throw Error('No space ID found');
     if (!process.env.CONTENTFUL_SPACE_ENV) throw Error('No environment found');
@@ -126,6 +126,12 @@ async function getGraph(): Promise<ContentGraph> {
     }
 
     // filter out links with a target node that isn't in the list of nodes
+    // these should only be either in draft or not searchable
+    // a list of everything that is filtered out can be generated with the following lines
+    //
+    // const test = links.filter(link => !nodes.map(node => node.id).includes(link.target)).map(link => link.target);
+    // console.log(test, test.length)
+
     links = links.filter(link => nodes.map(node => node.id).includes(link.target));
 
     return { nodes, links };
