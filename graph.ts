@@ -1,4 +1,3 @@
-import { APIGatewayProxyResult } from "aws-lambda";
 import { ClientAPI, createClient, Entry, Environment, Space } from "contentful-management";
 
 type ContentType
@@ -40,29 +39,7 @@ export interface ContentGraph {
     links: ContentLink[]
 }
 
-export async function getGraph(): Promise<APIGatewayProxyResult> {
-    try {
-        return {
-            statusCode: 200,
-            body: JSON.stringify(await generateContentGraph()),
-        }
-    }
-    catch (e) {
-        if (e instanceof Error) {
-            console.error(e.message);
-            return {
-                statusCode: 500,
-                body: JSON.stringify(e.message)
-            }
-        } else {
-            console.error(e);
-            return {
-                statusCode: 400,
-                body: 'An unknown error occurred\n' + JSON.stringify(e)
-            }
-        }
-    }
-}
+
 
 export async function generateContentGraph(): Promise<ContentGraph> {
     if (!process.env.CONTENTFUL_MGMT_ACCESS_TOKEN) throw Error('No delivery token found');

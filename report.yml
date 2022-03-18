@@ -1,0 +1,124 @@
+service: contentful-report
+custom:
+  bucketBaseName: serverless-shared-bucket
+  ResearchHub: ${self:service}
+  BusinessService: Faculty of Science
+  Faculty: Science
+  Department: Centre for eResearch
+  ProjectCode: N/A
+  WikiLink: N/A
+  Application: ${self:service}
+  CostCentre: N/A
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'} # Deploy with sls deploy --stage STAGE (default dev)
+  region: ap-southeast-2
+  endpointType: regional
+  deploymentBucket:
+    name: ${self:custom.bucketBaseName}-test
+  role: myLambdaRole
+  tags:
+    ResearchHub: ${self:custom.ResearchHub}
+    BusinessService: ${self:custom.BusinessService}
+    Department: ${self:custom.Department}
+    ProjectCode: ${self:custom.ProjectCode}
+    WikiLink: ${self:custom.WikiLink}
+    Application: ${self:custom.Application}
+    CostCentre: ${self:custom.CostCentre}
+    Faculty: ${self:custom.Faculty}
+  stackTags:
+    ResearchHub: ${self:custom.ResearchHub}
+    BusinessService: ${self:custom.BusinessService}
+    Department: ${self:custom.Department}
+    ProjectCode: ${self:custom.ProjectCode}
+    WikiLink: ${self:custom.WikiLink}
+    Application: ${self:custom.Application}
+    CostCentre: ${self:custom.CostCentre}
+    Faculty: ${self:custom.Faculty}
+  environment:
+    CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
+    CONTENTFUL_SPACE_ENV: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ENV}
+    CONTENTFUL_CONTENT_DELIVERY_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_CONTENT_DELIVERY_TOKEN}
+    CONTENTFUL_MGMT_ACCESS_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_MGMT_ACCESS_TOKEN}
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_EMAIL}
+    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
+    BUCKET_NAME: ${file(env/${self:provider.stage}.json):BUCKET_NAME}
+    CURRENT_REPORT_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):CURRENT_REPORT_SPREADSHEET_ID}
+    DATA_OVER_TIME_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):DATA_OVER_TIME_SPREADSHEET_ID}
+  apiGateway:
+    apiKeySourceType: HEADER
+  apiKeys:
+    - name: ${self:service}-${self:provider.stage}-apiKey
+
+functions:
+  runReports:
+    handler: contentfulReport.contentful
+    timeout: 500
+    events:
+      - http:
+          path: /
+          method: POST
+          cors: true
+          private: true
+      - schedule: cron(0 11 * * ? *)
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+resources:
+  Resources:
+    myLambdaRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        Path: /
+        RoleName: ${self:service}-role-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: "sts:AssumeRole"
+        ManagedPolicyArns:
+          - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        Policies:
+          - PolicyName: myPolicyName
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource:
+                    - "*"
+                - Effect: Allow
+                  Action:
+                    - ssm:GetParameter
+                    - ssm:GetParameters
+                  Resource:
+                    - "Fn::Join":
+                        - ":"
+                        - - "arn:aws:ssm"
+                          - Ref: "AWS::Region"
+                          - Ref: "AWS::AccountId"
+                          - "parameter/${self:provider.stage}/research-hub/*"
+                - Effect: Allow
+                  Action:
+                    - kms:Decrypt
+                  Resource:
+                    - "Fn::Join":
+                        - ":"
+                        - - "arn:aws:kms"
+                          - Ref: "AWS::Region"
+                          - Ref: "AWS::AccountId"
+                          - "${file(env/${self:provider.stage}.json):resourceKey}"
+                - Effect: Allow
+                  Action:
+                    - "s3:PutObject"
+                  Resource:
+                    - "arn:aws:s3:::${file(env/${self:provider.stage}.json):BUCKET_NAME}/*"
