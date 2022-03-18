@@ -44,7 +44,7 @@ provider:
     CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
     CONTENTFUL_SPACE_ENV: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ENV}
     CONTENTFUL_MGMT_ACCESS_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_MGMT_ACCESS_TOKEN}
-
+    CORS_ACCESS_CONTROL_ALLOW_ORIGINS: ${file(env/${self:provider.stage}.json):CORS_ACCESS_CONTROL_ALLOW_ORIGINS}
 package:
   patterns: ["node_modules", "graph.js", "graphAPI.js"]
 
