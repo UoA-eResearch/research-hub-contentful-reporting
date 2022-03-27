@@ -58,7 +58,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building content-graph-api project. Build number: ${env.BUILD_NUMBER}"
-                sh "npm install"
+                sh "npm ci"
                 echo "further build steps are handled in the deployment stage"
             }
         }
@@ -67,7 +67,7 @@ pipeline {
             steps {
                 echo "Testing content-graph-api project"
                 script {
-                    // Add some tests!
+                    sh "npm run test-graph"
                     echo "Testing complete"
                 }
             }

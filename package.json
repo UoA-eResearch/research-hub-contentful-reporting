@@ -9,9 +9,9 @@
   "main": "contentfulReport.ts",
   "scripts": {
     "start": "sls offline",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-graph": "echo \"Error: no test specified\"",
     "deploy-graph": "sls deploy --config graphAPI.yml",
-    "deploy-report": "sls deploy --config report.yml",
+    "deploy-report": "sls deploy --config report.yml --stage report",
     "generate": "graphql-codegen",
     "postinstall": "npm run generate"
   },
