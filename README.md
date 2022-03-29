@@ -73,7 +73,7 @@ Reports themselves are implemented in separate modules living in the [`/reports`
 
 - [Environments](/env/)
 
-  1. dev`](/env/dev.json):
+  1. [dev](/env/dev.json):
       - default environment
       - connects to Contentful `dev` environment
       - connects to `data-over-time-dev` and `content-overview-dev` Google sheets (`"CURRENT_REPORT_SPREADSHEET_ID"` and `"DATA_OVER_TIME_SPREADSHEET_ID"`)
