@@ -12,7 +12,7 @@ export async function getGraph(): Promise<APIGatewayProxyResult> {
         return {
             statusCode: 200,
             body: JSON.stringify(await generateContentGraph()),
-            headers: headers
+            headers
         }
     }
     catch (e) {
@@ -21,14 +21,14 @@ export async function getGraph(): Promise<APIGatewayProxyResult> {
             return {
                 statusCode: 500,
                 body: JSON.stringify(e.message),
-                headers: headers
+                headers
             }
         } else {
             console.error(e);
             return {
                 statusCode: 400,
                 body: 'An unknown error occurred\n' + JSON.stringify(e),
-                headers: headers
+                headers
             }
         }
     }

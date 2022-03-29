@@ -1,7 +1,7 @@
 import { GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
-import { ContentGraph, ContentLink, generateContentGraph } from "../graph";
+import { ContentGraph, ContentLink, ContentNode, generateContentGraph } from "../graph";
 
 type ContentGraphRow = {
     Type: string,
@@ -33,10 +33,8 @@ async function runConnectivityReport(graph: ContentGraph, sheet: GoogleSpreadshe
             Type: node.type,
             Title: node.name,
             'Degree of connectivity': countLinks(node.id, graph.links),
-            Link: `https://research-hub.auckland.ac.nz/${node.type}/${node.slug}`,
-            Edit: process.env.CONTENTFUL_SPACE_ID
-                ? `https://app.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/entries/${node.id}`
-                : ''
+            Link: hubUrl(node),
+            Edit: contentfulUrl(node),
         }
 
         rows.push(row);
@@ -53,6 +51,33 @@ async function runConnectivityReport(graph: ContentGraph, sheet: GoogleSpreadshe
 
 function countLinks(nodeId: string, links: ContentLink[]): number {
     return links.filter(link => link.source === nodeId).length
+}
+
+function hubUrl(node: ContentNode): string {
+    if (!process.env.CONTENTFUL_SPACE_ENV
+        || (process.env.CONTENTFUL_SPACE_ENV !== 'dev' && process.env.CONTENTFUL_SPACE_ENV !== 'prod')) {
+        return '';
+    }
+
+    let baseUrl = ';'
+    switch (process.env.CONTENTFUL_SPACE_ENV) {
+        case 'dev':
+            baseUrl = 'https://research-hub-dev.connect.test.auckland.ac.nz';
+            break;
+        case 'prod':
+            baseUrl = 'https://research-hub.auckland.ac.nz';
+            break;
+    }
+
+    return `${baseUrl}/${node.type}/${node.slug}`
+}
+
+function contentfulUrl(node: ContentNode): string {
+    if (!process.env.CONTENTFUL_SPACE_ID || !process.env.CONTENTFUL_SPACE_ENV) {
+        return '';
+    }
+
+    return `https://app.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_SPACE_ENV}/entries/${node.id}`
 }
 
 async function runLinksReport(graph: ContentGraph, sheet: GoogleSpreadsheetWorksheet): Promise<void> {
