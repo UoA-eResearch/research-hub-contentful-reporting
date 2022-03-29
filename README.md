@@ -1,38 +1,55 @@
-# ResearchHub Contentful Report
+# ResearchHub Contentful Report & Graph API
+
+This repository contains 2 lambda functions and its name might be slightly misleading. To accommodate this the repository contains two separate serverless configuration (yml) files.
+
+1. ResearchHub Contentful Reporting Lambda ([report.yml](report.yml))
+2. ResearchHub Contentful Graph API ([graphAPI.yml](graphAPI.yml))
+
+The following sections explain the functionality of both functions.
+
+## 1. ResearchHub Contentful Reporting Lambda
 
 This is an AWS lambda function written in `typescript` and managed by serverless framework. Its purpose is to generate reports on the content stored in the Contentful CMS backend for the [ResearchHub](https://github.com/UoA-eResearch/hub-stack). The lambda queries the Contentful GraphQL API and stores the report data in Google Sheets and AWS S3 buckets.
 
-## Prerequisites
+### Prerequisites
 
 This lambda function needs a token for access to the University of Auckland AWS test account. <!--add proper information here-->
 
-## Installation
+### Installation
 
-```npm install```
+```bash
+npm install
+```
 
-## Generate Typescript types
+### Generate Typescript types
 
 This happens automatically when you run `npm install`, but it can also be triggered manually.
 
-```npm run generate```
+```bash
+npm run generate
+```
 
-## Run lambda locally
+### Run reporting lambda locally
 
 We're using the serverless framework to build and deploy the lambda function. Run
-```bash
-sls offline [--stage <dev | nonProd>]
-```
-to run the lambda function locally. This should set up an endpoint accepting POST requests under `http://localhost:3000/dev/` to trigger execution. The endpoint requires and API key, which can be disabled by setting `private: false` in `serverless.yml`.
-
-## Deploy to AWS
 
 ```bash
-sls deploy [--stage <dev | nonProd>]
+sls offline [--stage <dev | report>] --config report.yml
 ```
 
-## General structure
+to run the lambda function locally. This should set up an endpoint accepting POST requests under `http://localhost:3000/dev/` to trigger execution. The endpoint requires and API key, which can be disabled by setting `private: false` in [`report.yml`](report.yml).
 
-The root folder contains the main module `contentfulReport.ts`. It exports one `async` function which is the entry point for the AWS lambda caller and its only purpose is to run reports and handle error messages. Reports are called from this function in sequence:
+### Deploy reporting lambda to AWS
+
+```bash
+sls deploy [--stage <dev | report>] --config report.yml
+```
+
+>Note: the `report` stage is only for the reporting lambda and corresponds to the 'production' version. It will gather information from the contentful 'prod' environment, but the deployment takes place into the AWS nonProd account.
+
+### General structure
+
+The root folder contains the main module [`contentfulReport.ts`](contentfulReport.ts). It exports one `async` function which is the entry point for the AWS lambda caller and its only purpose is to run reports and handle error messages. Reports are called from this function in sequence:
 
 ```typescript
 export async function contentful(): Promise<APIGatewayProxyResult> {
@@ -48,49 +65,120 @@ export async function contentful(): Promise<APIGatewayProxyResult> {
 }
 ```
 
-Reports themselves are implemented in separate modules living in the `/reports` directory. Each report should be contained in its own module.
-### Structure of reporting modules
+Reports themselves are implemented in separate modules living in the [`/reports`](/reports/) directory. Each report should be contained in its own module.
 
-There is no limitation on how the reporting modules should be laid out. However, they should export one `async` function that can be called by the `contentfulReport.ts` module.
+- Structure of reporting modules
 
-### Environments
+  There is no limitation on how the reporting modules should be laid out. However, they should export one `async` function that can be called by the [`contentfulReport.ts`](contentfulReport.ts) module.
 
-1. `dev`:
-    * default environment
-    * connects to Contentful `dev` environment
-    * connects to `data-over-time-dev` and `content-overview-dev` Google sheets
-    * connects to `researchhub-contentful-backup-dev` S3 bucket
-2. `nonProd`:
-    * 'production' environment (called nonProd as we always deploy to AWS nonProd)
-    * connects to Contentful `prod` environment
-    * connects to `data-over-time` and `content-overview` Google sheets
-    * connects to `researchhub-contentful-backup-test` S3 bucket
+- [Environments](/env/)
+
+  1. dev`](/env/dev.json):
+      - default environment
+      - connects to Contentful `dev` environment
+      - connects to `data-over-time-dev` and `content-overview-dev` Google sheets (`"CURRENT_REPORT_SPREADSHEET_ID"` and `"DATA_OVER_TIME_SPREADSHEET_ID"`)
+      - connects to `researchhub-contentful-backup-dev` S3 bucket
+  2. [report](/env/report.json):
+      - 'production' environment (called report as it is only for the reporting lambda)
+      - connects to Contentful `prod` environment
+      - connects to `data-over-time` and `content-overview` Google sheets (`"CURRENT_REPORT_SPREADSHEET_ID"` and `"DATA_OVER_TIME_SPREADSHEET_ID"`)
+      - connects to `researchhub-contentful-backup-test` S3 bucket
+
 ### Helper modules
 
-#### Module `apolloClient.ts`
+- Module [`apolloClient.ts`](apolloClient.ts):
 
-This helper allows opening a connection to the Contentful GraphQL server using an Apollo client. It grabs a token from AWS parameter store and connects to the environment specified in the relevant environment file. Connecting to a different environment is possible by including the environment in the `CONTENTFUL_SPACE_ENV` variable, for example:
+  This helper allows opening a connection to the Contentful GraphQL server using an Apollo client. It grabs a token from AWS parameter store and connects to the environment specified in the relevant environment file. Connecting to a different environment is possible by including the environment in the `CONTENTFUL_SPACE_ENV` variable, for example:
 
-```json
-"CONTENTFUL_SPACE_ENV": "test",
+    ```json
+    "CONTENTFUL_SPACE_ENV": "test",
+    ```
+
+  in `/env/{dev,report}.json`
+
+- Module [`googleDocsWrapper.ts`](googleDocsWrapper.ts):
+
+  This is a helper for easier access to the relevant Google Docs, which store the current report information. There are 2 documents and their id's are defined environment variables in `/env`. The [`googleDocsWrapper.ts`](googleDocsWrapper.ts) module assists with saving the data generated by the reporting modules in those 2 docs.
+
+  For both docs, there are union type definitions that contain the sheets on each of the docs. These are `CurrentReportWorkSheet` and `DataOverTimeWorkSheet` and they contain the titles of the sheets in each doc. This is because the individual sheets are reference by name instead their id to make it easier to set up the document in case a worksheets gets deleted by accident. When a new sheet is added to one of the docs the name should be added to the corresponding union type.
+
+- Module [`csvUpload.ts`](csvUpload.ts)
+
+  This module helps uploading `.csv` versions of the report tables to the S3 bucket configured in `BUCKET_NAME` in the environment file.
+
+### How to create a new report
+
+Each report should map onto one worksheet in the Google docs. Add the worksheet first and then change the code. After adding the worksheet, the name should be added to the union types `CurrentReportWorkSheet` and/or `DataOverTimeWorkSheet` in the [`googleDocsWrapper.ts`](googleDocsWrapper.ts) module.
+
+The GraphQL query should be added to a new file in [`/reports/queries`](/reports/queries/).
+
+A new module should be created in the [`/reports`](/reports/) folder. This module should handle every operation necessary for the completion of the report. This includes the GraphQL query, data processing, writing the data to the Google docs and uploading csv's to S3.
+
+## 2. ResearchHub Contentful Graph API
+
+The Graph API lambda function queries contentful for a complete set of content and all internal connections. This can be used to generate a graph visualisation or analyse the connectivity of the content graph.
+
+The functionality of this lambda is split into two modules:
+
+1. Query contentful and build graph object
+2. lambda function endpoint
+
+The reason for this is that with this implementation the first module can be imported by the reporting lambda to generate a tabular report of the content graph on a daily basis, without having to query the graph API endpoint.
+
+If not mentioned otherwise the prerequisites are the same as for the reporting lambda above.
+
+### Run graphAPI lambda locally
+
+```bash
+sls offline [--stage <dev | test | prod>] --config graphAPI.yml
 ```
 
-in `/env/*.json`
+This should set up an endpoint accepting GET requests under `http://localhost:3000/dev/graph`
 
-#### Module `googleDocsWrapper.ts`
+### Deploy graphAPI lambda
 
-This is a helper for easier access to the relevant Google Docs, which store the current report information. There are 2 documents and their id's are defined environment variables in `/env`. The `googleDocsWrapper.ts` module assists with saving the data generated by the reporting modules in those 2 docs.
+The Jenkins pipeline can be used to deploy this lambda to the `dev`, `test` or `prod` environments. Creating (or pushing to) a branch with the same name will trigger the deployment process automatically. The `prod` branch is protected and requires a pull request to be created and approved.
 
-For both docs, there are union type definitions that contain the sheets on each of the docs. These are `CurrentReportWorkSheet` and `DataOverTimeWorkSheet` and they contain the titles of the sheets in each doc. This is because the individual sheets are reference by name instead their id to make it easier to set up the document in case a worksheets gets deleted by accident. When a new sheet is added to one of the docs the name should be added to the corresponding union type.
+### Structure
 
-#### Module `csvUpload.ts`
+The graph API lambda is a lot simpler than the reporting lambda as it only consists of 2 modules [`graph.ts`](graph.ts) and [`graphAPI.ts`](graphAPI.ts). The report for the content graph is implemented in [`/reports/contentGraph.ts`](reports/contentGraph.ts) and will not be explained further.
 
-This module helps uploading `.csv` versions of the report tables to the S3 bucket configured in `BUCKET_NAME` in the environment file.
+- [`graph.ts`](graph.ts) queries contentful for information about the content graph and returns a graph object containing a list of nodes and links (see below for more information)
 
-## How to create a new report
+  The module exports one function
 
-Each report should map onto one worksheet in the Google docs. Add the worksheet first and then change the code. After adding the worksheet, the name should be added to the union types `CurrentReportWorkSheet` and/or `DataOverTimeWorkSheet` in the `googleDocsWrapper.ts` module.
+  ```typescript
+  export async function generateContentGraph(): Promise<ContentGraph>
+  ```
 
-The GraphQL query should be added to a new file in `/reports/queries`.
+  which returns the graph object. The module uses the contentful management API and the [contentful-management package](https://www.npmjs.com/package/contentful-management) to query the relevant information from contentful.
 
-A new module should be created in the `/reports` folder. This module should handle every operation necessary for the completion of the report. This includes the GraphQL query, data processing, writing the data to the Google docs and uploading csv's to S3.
+  >Note: The module required 3 environment variables to be set up: `CONTENTFUL_MGMT_ACCESS_TOKEN`, `CONTENTFUL_SPACE_ID` and `CONTENTFUL_SPACE_ENV`
+
+  Due to limitations in the content model the query has to be run for each content type individually. The queries are mostly the same, except for the `subHub` type which requires some extra fields (see `queryMap` variable in [`graph.ts`](graph.ts))
+
+  There are 2 further restrictions on the query:
+
+  1. `'fields.searchable': 'true'` to only retrieve content that is searchable
+  2. `'sys.publishedAt[exists]': true` to only retrieve published content (draft content will always have `null` in this field)
+
+  The rest of the implementation just loops over all retrieved nodes and uses the `relatedItems` (+ `internalPages` and `externalPages` for `subHub` types) fields to generate a list of links between all nodes.
+
+  In the end we have to filter out any link where the `target` does not exist in our list of nodes (this can happen due to draft and not-searchable items existing in the `relatedItems` field of and item)
+
+- [`graphAPI.ts`](graphAPI.ts) is a simple wrapper for the graph generation module and acts as the AWS lambda endpoint
+
+- [Environments](/env/)
+
+  1. [dev](/env/dev.json):
+      - connects to Contentful `dev` environment
+      - sets cognito user pool for use with UoA test environment (`"cognitoUserPoolId"`)
+      - sets custom domain `apigw.test.amazon.auckland.ac.nz`
+  2. [test](/env/test.json):
+      - connects to Contentful `test` environment
+      - sets cognito user pool for use with UoA test environment (`"cognitoUserPoolId"`)
+      - sets custom domain `apigw.test.amazon.auckland.ac.nz`
+  3. [prod](/env/prod.json)
+      - connects to Contentful `prod` environment
+      - sets cognito user pool for use with UoA prod environment (`"cognitoUserPoolId"`)
+      - set custom domain `apigw.prod.amazon.auckland.ac.nz`
