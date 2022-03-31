@@ -3,7 +3,9 @@ import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/clie
 import * as fs from 'fs';
 import { CurrentReportWorkSheet, DataOverTimeWorkSheet } from "./googleDocsWrapper";
 
-export async function uploadCsv(data: unknown, sheet: CurrentReportWorkSheet | DataOverTimeWorkSheet, headers?: string[]): Promise<void> {
+type Table = Record<string, string | number | boolean>[]
+
+export async function uploadCsv(data: Table, sheet: CurrentReportWorkSheet | DataOverTimeWorkSheet, headers?: string[]): Promise<void> {
     const fileName = sheet.replace(/ /g, '-') + '.csv';
 
     const csvOptions: Options = {
@@ -31,7 +33,7 @@ async function uploadToS3(fileName: string, csv: unknown): Promise<void> {
     }
 
     try {
-        const file = fs.readFileSync(path)    
+        const file = fs.readFileSync(path)
 
         const bucketParams: PutObjectCommandInput = {
             Bucket: process.env.BUCKET_NAME,
@@ -39,7 +41,7 @@ async function uploadToS3(fileName: string, csv: unknown): Promise<void> {
             Body: file
         }
 
-        const client = new S3Client({region: 'ap-southeast-2'})
+        const client = new S3Client({ region: 'ap-southeast-2' })
         await client.send(new PutObjectCommand(bucketParams))
     }
     catch (e) {

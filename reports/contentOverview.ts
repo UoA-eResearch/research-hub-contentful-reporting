@@ -15,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = [ 'Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages' ];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages'];
 const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
@@ -119,8 +119,8 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         //upload to S3 bucket in the background
         uploadCsv(dotsRows, 'Content Types')
     } catch (e) {
-        if (e instanceof ApolloError) {
-            console.error('Error in Content Overview report: ' + e.graphQLErrors + e.message);
+        if (e instanceof Error) {
+            console.error('Error in Content Overview report: ' + e.name + ' ' + e.message);
         }
         throw e;
     }
@@ -366,7 +366,7 @@ function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<Conten
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -393,7 +393,7 @@ function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<Co
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -420,7 +420,7 @@ function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -510,40 +510,49 @@ async function getRows<T>(
     mappingFunction: (data: T) => Partial<ContentOverviewData>[] | undefined,
     getTotalFunction: (data: T) => number
 ): Promise<{ data: Partial<ContentOverviewData>[], total: number } | undefined> {
-    const queryObservable = await client.watchQuery({
-        query: query,
-        variables: {
-            limit: GRAPHQL_CHUNK_SIZE,
-            skip: 0
-        }
-    });
-
-
-    const rows: Partial<ContentOverviewData>[] = [];
-
-    const result = await queryObservable.result();
-
-    const initialData = mappingFunction(result.data);
-    initialData ? rows.push(...initialData) : null;
-
-    const total = getTotalFunction(result.data);
-
-    let i = 1;
-    while (total > rows.length) {
-        const moreItems = await queryObservable.fetchMore({
+    try {
+        const queryObservable = client.watchQuery({
+            query: query,
             variables: {
                 limit: GRAPHQL_CHUNK_SIZE,
-                skip: GRAPHQL_CHUNK_SIZE * i
+                skip: 0
             }
         });
 
-        const moreRows = mappingFunction(moreItems.data);
-        moreRows ? rows.push(...moreRows) : null;
+        const rows: Partial<ContentOverviewData>[] = [];
 
-        i++;
+        const result = await queryObservable.result();
+
+        const initialData = mappingFunction(result.data);
+        initialData ? rows.push(...initialData) : null;
+
+        const total = getTotalFunction(result.data);
+
+        let i = 1;
+        while (total > rows.length) {
+            const moreItems = await queryObservable.fetchMore({
+                variables: {
+                    limit: GRAPHQL_CHUNK_SIZE,
+                    skip: GRAPHQL_CHUNK_SIZE * i
+                }
+            });
+
+            const moreRows = mappingFunction(moreItems.data);
+            moreRows ? rows.push(...moreRows) : null;
+
+            i++;
+        }
+
+        return { data: rows, total };
+    } catch (e) {
+        if (e instanceof ApolloError && e.graphQLErrors.length !== 0) {
+            for (const error of e.graphQLErrors) {
+                console.error('GraphQL error in Content Overview report: ' + error.name + ': ' + error.message + ' Attempting to continue with report.');
+            }
+        } else {
+            throw e;
+        }
     }
-
-    return { data: rows, total };
 }
 
 
