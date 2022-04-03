@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client/core";
 import { getApolloClient } from "../apolloClient";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
@@ -32,53 +31,43 @@ export async function runPagesPerOrgUnit(chunkSize?: number): Promise<void> {
         }
     } catch (e) {
         if (e instanceof Error) {
-            console.error('Error in Pages Per Org Unit report: ' + e.name + ' ' + e.message);
+            console.error(`Error in Pages Per Org Unit report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
 }
 
 async function getData(): Promise<HeaderTitleRow[] | undefined> {
-    try {
-        const client = getApolloClient();
+    const client = getApolloClient();
 
-        const query = client.watchQuery({
-            query: GetPagesPerOrgUnitDocument,
+    const query = client.watchQuery({
+        query: GetPagesPerOrgUnitDocument,
+        variables: {
+            limit: MAX_ITEMS,
+            skip: 0
+        }
+    });
+
+    const rows: HeaderTitleRow[] = [];
+
+    const result = await query.result();
+
+    rows.push(...mapData(result.data));
+
+    let i = 0;
+    while ((result.data.orgUnitCollection?.total ?? 0) > rows.length) {
+        const moreItems = await query.fetchMore({
             variables: {
                 limit: MAX_ITEMS,
-                skip: 0
+                skip: MAX_ITEMS * i
             }
         });
 
-        const rows: HeaderTitleRow[] = [];
-
-        const result = await query.result();
-
-        rows.push(...mapData(result.data));
-
-        let i = 0;
-        while ((result.data.orgUnitCollection?.total ?? 0) > rows.length) {
-            const moreItems = await query.fetchMore({
-                variables: {
-                    limit: MAX_ITEMS,
-                    skip: MAX_ITEMS * i
-                }
-            });
-
-            rows.push(...mapData(moreItems.data));
-            i++;
-        }
-
-        return rows;
-    } catch (e) {
-        if (e instanceof ApolloError && e.graphQLErrors.length !== 0) {
-            for (const error of e.graphQLErrors) {
-                console.error('GraphQL error in Pages Per Org Unit report: ' + error.name + ': ' + error.message + ' Attempting to continue with report.');
-            }
-        } else {
-            throw e;
-        }
+        rows.push(...mapData(moreItems.data));
+        i++;
     }
+
+    return rows;
 }
 
 function mapData(data: GetPagesPerOrgUnitQuery): HeaderTitleRow[] {

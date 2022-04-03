@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client/core";
 import { getApolloClient } from "../apolloClient";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
@@ -27,38 +26,29 @@ export async function runPagesPerCategory(): Promise<void> {
         }
     } catch (e) {
         if (e instanceof Error) {
-            console.error('Error in Pages Per Category report: ' + e.name + ' ' + e.message);
+            console.error(`Error in Pages Per Category report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
 }
 
 async function getData(): Promise<HeaderTitleRow[] | undefined> {
-    try {
-        const client = getApolloClient();
+    const client = getApolloClient();
 
-        const categoryData = await client.query({
-            query: GetPagesPerCategoryDocument
-        });
-        const stageData = await client.query({
-            query: GetPagesPerStageDocument
-        });
+    const categoryData = await client.query({
+        query: GetPagesPerCategoryDocument
+    });
 
-        const rows: HeaderTitleRow[] = []
+    const stageData = await client.query({
+        query: GetPagesPerStageDocument
+    });
 
-        rows.push(...mapCategoryData(categoryData.data));
-        rows.push(...mapStageData(stageData.data));
+    const rows: HeaderTitleRow[] = []
 
-        return rows;
-    } catch (e) {
-        if (e instanceof ApolloError && e.graphQLErrors.length !== 0) {
-            for (const error of e.graphQLErrors) {
-                console.error('GraphQL error in Pages Per Category report: ' + error.name + ': ' + error.message + ' Attempting to continue with report.');
-            }
-        } else {
-            throw e;
-        }
-    }
+    rows.push(...mapCategoryData(categoryData.data));
+    rows.push(...mapStageData(stageData.data));
+
+    return rows;
 }
 
 function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] {
