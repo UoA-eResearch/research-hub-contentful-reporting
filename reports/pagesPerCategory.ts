@@ -1,13 +1,12 @@
-import { ApolloError } from "@apollo/client/core";
 import { getApolloClient } from "../apolloClient";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
+type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages' ];
+const sheetHeaderFields: HeaderTitle[] = ['Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
 
 
 
@@ -17,26 +16,29 @@ export async function runPagesPerCategory(): Promise<void> {
 
         const data = await getData();
 
-        uploadCsv(data, 'Pages Per Category')
+        if (data) {
+            uploadCsv(data, 'Pages Per Category')
 
-        const reportSheet = await currentReportDoc.getSheet('Pages Per Category');
-        await reportSheet.clear();
-        await reportSheet.setHeaderRow(sheetHeaderFields);
-        await reportSheet.addRows(data);
+            const reportSheet = await currentReportDoc.getSheet('Pages Per Category');
+            await reportSheet.clear();
+            await reportSheet.setHeaderRow(sheetHeaderFields);
+            await reportSheet.addRows(data);
+        }
     } catch (e) {
-        if (e instanceof ApolloError) {
-            console.error('Error in Pages Per Category report: ' + e.graphQLErrors + e.message);
+        if (e instanceof Error) {
+            console.error(`Error in Pages Per Category report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
 }
 
-async function getData(): Promise<HeaderTitleRow[]> {
+async function getData(): Promise<HeaderTitleRow[] | undefined> {
     const client = getApolloClient();
 
     const categoryData = await client.query({
         query: GetPagesPerCategoryDocument
     });
+
     const stageData = await client.query({
         query: GetPagesPerStageDocument
     });

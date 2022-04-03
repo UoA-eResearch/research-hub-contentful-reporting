@@ -1,9 +1,9 @@
 import { getApolloClient } from "../apolloClient";
-import { ApolloClient, ApolloError, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
-import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
 import { uploadCsv } from "../csvUpload";
+import { ResultOf } from "@graphql-typed-document-node/core";
 
 /**
  * Contentful graphql URI
@@ -15,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = [ 'Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages' ];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages'];
 const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
@@ -25,7 +25,10 @@ type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Ne
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
 type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages';
 
-declare type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding';
+type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
+type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
+
+type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding';
 
 interface ContentOverviewData {
     id: string;
@@ -119,56 +122,57 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         //upload to S3 bucket in the background
         uploadCsv(dotsRows, 'Content Types')
     } catch (e) {
-        if (e instanceof ApolloError) {
-            console.error('Error in Content Overview report: ' + e.graphQLErrors + e.message);
+        if (e instanceof Error) {
+            console.error(`Error in Content Overview report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
 }
 
-// get totals functions
+// get totals function
 
-function subHubsTotal(allSubHubs: GetAllSubHubsQuery): number {
-    return allSubHubs.subHubCollection?.total ?? 0;
-}
-function articlesTotal(allArticles: GetAllArticlesQuery): number {
-    return allArticles.articleCollection?.total ?? 0;
-}
-function softwaresTotal(allSoftwares: GetAllSoftwaresQuery): number {
-    return allSoftwares.softwareCollection?.total ?? 0;
-}
-function officialDocumentsTotal(allOfficialDocuments: GetAllOfficialDocumentsQuery): number {
-    return allOfficialDocuments.officialDocumentsCollection?.total ?? 0;
-}
-function linkCardsTotal(allLinkCards: GetAllLinkCardsQuery): number {
-    return allLinkCards.linkCardCollection?.total ?? 0;
-}
-function eventsTotal(allEvents: GetAllEventsQuery): number {
-    return allEvents.eventCollection?.total ?? 0;
-}
-function personsTotal(allPersons: GetAllPersonsQuery): number {
-    return allPersons.personCollection?.total ?? 0;
-}
-function servicesTotal(allServices: GetAllServicesQuery): number {
-    return allServices.serviceCollection?.total ?? 0;
-}
-function videosTotal(allVideos: GetAllVideosQuery): number {
-    return allVideos.videoCollection?.total ?? 0;
-}
-function categoriesTotal(allCategories: GetAllCategoriesQuery): number {
-    return allCategories.categoryCollection?.total ?? 0;
-}
-function equipmentTotal(allEquipment: GetAllEquipmentQuery): number {
-    return allEquipment.equipmentCollection?.total ?? 0;
-}
-function caseStudiesTotal(allCaseStudies: GetAllCaseStudiesQuery): number {
-    return allCaseStudies.caseStudyCollection?.total ?? 0;
-}
-function fundingPagesTotal(allFundingPages: GetAllFundingPagesQuery): number {
-    return allFundingPages.fundingCollection?.total ?? 0;
+function getTotal(query: ContentfulQueryType): number {
+    if ('articleCollection' in query) return query.articleCollection?.total ?? 0;
+    if ('subHubCollection' in query) return query.subHubCollection?.total ?? 0;
+    if ('softwareCollection' in query) return query.softwareCollection?.total ?? 0;
+    if ('officialDocumentsCollection' in query) return query.officialDocumentsCollection?.total ?? 0;
+    if ('linkCardCollection' in query) return query.linkCardCollection?.total ?? 0;
+    if ('eventCollection' in query) return query.eventCollection?.total ?? 0;
+    if ('personCollection' in query) return query.personCollection?.total ?? 0;
+    if ('serviceCollection' in query) return query.serviceCollection?.total ?? 0;
+    if ('videoCollection' in query) return query.videoCollection?.total ?? 0;
+    if ('categoryCollection' in query) return query.categoryCollection?.total ?? 0;
+    if ('equipmentCollection' in query) return query.equipmentCollection?.total ?? 0;
+    if ('caseStudyCollection' in query) return query.caseStudyCollection?.total ?? 0;
+    if ('fundingCollection' in query) return query.fundingCollection?.total ?? 0;
+
+    throw new Error(`Unknown query type: ${query}`);
 }
 
 // mapping function
+
+function mapReportData(query: ContentfulQueryType): Partial<ContentOverviewData>[] | undefined {
+    if ('articleCollection' in query) return mapReportDataArticles(query);
+    if ('subHubCollection' in query) return mapReportDataSubHubs(query);
+    if ('softwareCollection' in query) return mapReportDataSoftwares(query);
+    if ('officialDocumentsCollection' in query) return mapReportDataOfficialDocuments(query)
+    if ('linkCardCollection' in query) return mapReportDataLinkCards(query);
+    if ('eventCollection' in query) return mapReportDataEvents(query);
+    if ('personCollection' in query) return mapReportDataPersons(query);
+    if ('serviceCollection' in query) return mapReportDataServices(query);
+    if ('videoCollection' in query) return mapReportDataVideos(query);
+    if ('categoryCollection' in query) return mapReportDataCategories(query);
+    if ('equipmentCollection' in query) return mapReportDataEquipment(query);
+    if ('caseStudyCollection' in query) return mapReportDataCaseStudies(query);
+    if ('fundingCollection' in query) return mapReportDataFundingPages(query);
+
+    throw new Error(`Unknown query type: ${query}`);
+}
+
+// This section contains implementations for parsing query data into tabular data
+// As the return types all slightly differ it was easier to implement one mapping function
+// for each type individually. However, this could be generalised and shortened.
+
 function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentOverviewData>[] | undefined {
     return queryData.subHubCollection?.items.map((item) => {
         const rowData: Partial<ContentOverviewData> = {
@@ -366,7 +370,7 @@ function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<Conten
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -393,7 +397,7 @@ function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<Co
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -420,7 +424,7 @@ function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<
             isSearchable: item?.searchable,
             isSsoProtected: item?.ssoProtected,
             lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries: 
+            linkedEntries:
                 (item?.relatedItemsCollection?.total ?? 0) +
                 (item?.relatedDocsCollection?.total ?? 0),
             nextReview: item?.nextReview ? new Date(item.nextReview) : null,
@@ -445,19 +449,19 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
 
     const report: Partial<ContentOverviewData>[] = [];
 
-    const subHubRows = await getRows(client, GetAllSubHubsDocument, mapReportDataSubHubs, subHubsTotal);
-    const articleRows = await getRows(client, GetAllArticlesDocument, mapReportDataArticles, articlesTotal);
-    const softwareRows = await getRows(client, GetAllSoftwaresDocument, mapReportDataSoftwares, softwaresTotal);
-    const officialDocumentRows = await getRows(client, GetAllOfficialDocumentsDocument, mapReportDataOfficialDocuments, officialDocumentsTotal);
-    const linkCardRows = await getRows(client, GetAllLinkCardsDocument, mapReportDataLinkCards, linkCardsTotal);
-    const eventRows = await getRows(client, GetAllEventsDocument, mapReportDataEvents, eventsTotal);
-    const personRows = await getRows(client, GetAllPersonsDocument, mapReportDataPersons, personsTotal);
-    const serviceRows = await getRows(client, GetAllServicesDocument, mapReportDataServices, servicesTotal);
-    const videoRows = await getRows(client, GetAllVideosDocument, mapReportDataVideos, videosTotal);
-    const categoryRows = await getRows(client, GetAllCategoriesDocument, mapReportDataCategories, categoriesTotal);
-    const equipmentRows = await getRows(client, GetAllEquipmentDocument, mapReportDataEquipment, equipmentTotal);
-    const caseStudyRows = await getRows(client, GetAllCaseStudiesDocument, mapReportDataCaseStudies, caseStudiesTotal);
-    const fundingRows = await getRows(client, GetAllFundingPagesDocument, mapReportDataFundingPages, fundingPagesTotal);
+    const subHubRows = await getRows(client, GetAllSubHubsDocument);
+    const articleRows = await getRows(client, GetAllArticlesDocument);
+    const softwareRows = await getRows(client, GetAllSoftwaresDocument);
+    const officialDocumentRows = await getRows(client, GetAllOfficialDocumentsDocument);
+    const linkCardRows = await getRows(client, GetAllLinkCardsDocument);
+    const eventRows = await getRows(client, GetAllEventsDocument);
+    const personRows = await getRows(client, GetAllPersonsDocument);
+    const serviceRows = await getRows(client, GetAllServicesDocument);
+    const videoRows = await getRows(client, GetAllVideosDocument);
+    const categoryRows = await getRows(client, GetAllCategoriesDocument);
+    const equipmentRows = await getRows(client, GetAllEquipmentDocument);
+    const caseStudyRows = await getRows(client, GetAllCaseStudiesDocument);
+    const fundingRows = await getRows(client, GetAllFundingPagesDocument);
 
     subHubRows ? report.push(...subHubRows.data) : null;
     articleRows ? report.push(...articleRows.data) : null;
@@ -500,33 +504,28 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
  * 
  * @param client instance of ApolloClient
  * @param query graphQL query from gql
- * @param mappingFunction maps the return type of the apollo query to and array of ReportData for further processing
- * @param getTotalFunction a function that takes an apollo query result and returns the variable total from it
  * @returns array of ReportData
  */
-async function getRows<T>(
+async function getRows(
     client: ApolloClient<NormalizedCacheObject>,
-    query: TypedDocumentNode<T>,
-    mappingFunction: (data: T) => Partial<ContentOverviewData>[] | undefined,
-    getTotalFunction: (data: T) => number
+    query: ContentfulDocumentType,
 ): Promise<{ data: Partial<ContentOverviewData>[], total: number } | undefined> {
-    const queryObservable = await client.watchQuery({
+    const rows: Partial<ContentOverviewData>[] = [];
+
+    const queryObservable = client.watchQuery({
         query: query,
         variables: {
             limit: GRAPHQL_CHUNK_SIZE,
             skip: 0
-        }
+        },
     });
-
-
-    const rows: Partial<ContentOverviewData>[] = [];
 
     const result = await queryObservable.result();
 
-    const initialData = mappingFunction(result.data);
+    const initialData = mapReportData(result.data);
     initialData ? rows.push(...initialData) : null;
 
-    const total = getTotalFunction(result.data);
+    const total = getTotal(result.data);
 
     let i = 1;
     while (total > rows.length) {
@@ -534,10 +533,12 @@ async function getRows<T>(
             variables: {
                 limit: GRAPHQL_CHUNK_SIZE,
                 skip: GRAPHQL_CHUNK_SIZE * i
-            }
+            },
         });
 
-        const moreRows = mappingFunction(moreItems.data);
+        const moreRows = mapReportData(moreItems.data);
+
+
         moreRows ? rows.push(...moreRows) : null;
 
         i++;
@@ -545,9 +546,6 @@ async function getRows<T>(
 
     return { data: rows, total };
 }
-
-
-
 
 
 function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
