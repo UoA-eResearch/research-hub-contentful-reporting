@@ -1,6 +1,6 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 
-export type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages Per Category' | 'Pages Per Org Unit';
+export type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages Per Category' | 'Pages Per Org Unit' | 'Content Graph' | 'Connection List';
 export type DataOverTimeWorkSheet = 'Content Types';
 
 class GoogleDoc {
@@ -40,7 +40,7 @@ export class CurrentReportDoc extends GoogleDoc {
 
     private constructor() {
         if (!process.env.CURRENT_REPORT_SPREADSHEET_ID) {
-            throw('Could not find current-report sheet id');
+            throw ('Could not find current-report sheet id');
         }
         super(process.env.CURRENT_REPORT_SPREADSHEET_ID);
     }
@@ -62,8 +62,8 @@ export class DataOverTimeDoc extends GoogleDoc {
     }
 
     private constructor() {
-        if(!process.env.DATA_OVER_TIME_SPREADSHEET_ID) {
-            throw('Could not find data-over-time sheet id')
+        if (!process.env.DATA_OVER_TIME_SPREADSHEET_ID) {
+            throw ('Could not find data-over-time sheet id')
         }
         super(process.env.DATA_OVER_TIME_SPREADSHEET_ID);
     }

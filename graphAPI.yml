@@ -1,4 +1,4 @@
-service: contentful-report
+service: content-graph-api
 custom:
   bucketBaseName: serverless-shared-bucket
   ResearchHub: ${self:service}
@@ -9,6 +9,10 @@ custom:
   WikiLink: N/A
   Application: ${self:service}
   CostCentre: N/A
+  customDomain:
+    domainName: ${file(env/${self:provider.stage}.json):awsApiGatewayCustomDomainName}
+    basePath: ${self:service}-${self:provider.stage}
+    stage: ${self:provider.stage}
 provider:
   name: aws
   runtime: nodejs14.x
@@ -16,7 +20,7 @@ provider:
   region: ap-southeast-2
   endpointType: regional
   deploymentBucket:
-    name: ${self:custom.bucketBaseName}-test
+    name: ${self:custom.bucketBaseName}-${file(env/${self:provider.stage}.json):DEPLOYMENT_BUCKET_NAME}
   role: myLambdaRole
   tags:
     ResearchHub: ${self:custom.ResearchHub}
@@ -39,42 +43,36 @@ provider:
   environment:
     CONTENTFUL_SPACE_ID: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ID}
     CONTENTFUL_SPACE_ENV: ${file(env/${self:provider.stage}.json):CONTENTFUL_SPACE_ENV}
-    CONTENTFUL_CONTENT_DELIVERY_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_CONTENT_DELIVERY_TOKEN}
     CONTENTFUL_MGMT_ACCESS_TOKEN: ${file(env/${self:provider.stage}.json):CONTENTFUL_MGMT_ACCESS_TOKEN}
-    GOOGLE_SERVICE_ACCOUNT_EMAIL: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_EMAIL}
-    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${file(env/${self:provider.stage}.json):GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY}
-    BUCKET_NAME: ${file(env/${self:provider.stage}.json):BUCKET_NAME}
-    CURRENT_REPORT_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):CURRENT_REPORT_SPREADSHEET_ID}
-    DATA_OVER_TIME_SPREADSHEET_ID: ${file(env/${self:provider.stage}.json):DATA_OVER_TIME_SPREADSHEET_ID}
-  apiGateway:
-    apiKeySourceType: HEADER
-  apiKeys:
-    - name: ${self:service}-${self:provider.stage}-apiKey
+    CORS_ACCESS_CONTROL_ALLOW_ORIGINS: ${file(env/${self:provider.stage}.json):CORS_ACCESS_CONTROL_ALLOW_ORIGINS}
+package:
+  patterns: ["node_modules", "graph.js", "graphAPI.js"]
 
 functions:
   getGraph:
-    handler: graph.main
+    handler: graphAPI.getGraph
     timeout: 500
     events:
       - http:
           path: /graph
           method: GET
-          cors: true
-          private: false
-  runReports:
-    handler: contentfulReport.contentful
-    timeout: 500
-    events:
-      - http:
-          path: /
-          method: POST
-          cors: true
-          private: true
-      - schedule: cron(0 11 * * ? *)
+          cors:
+            origin: ${file(env/${self:provider.stage}.json):CORS_ACCESS_CONTROL_ALLOW_ORIGINS}
+            headers:
+              - Content-Type
+              - Authorization
+              - sentry-trace
+            allowCredentials: false
+          authorizer:
+            type: cognito_user_pools
+            authorizerId:
+              Ref: MyApiGatewayAuthorizer
+            scopes: ${file(env/${self:provider.stage}.json):awsApiGatewayOauthScopes}
 
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
+  - serverless-domain-manager
 
 resources:
   Resources:
@@ -126,8 +124,20 @@ resources:
                           - Ref: "AWS::Region"
                           - Ref: "AWS::AccountId"
                           - "${file(env/${self:provider.stage}.json):resourceKey}"
-                - Effect: Allow
-                  Action:
-                    - "s3:PutObject"
-                  Resource:
-                    - "arn:aws:s3:::${file(env/${self:provider.stage}.json):BUCKET_NAME}/*"
+
+    MyApiGatewayAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        AuthorizerResultTtlInSeconds: 10
+        IdentitySource: method.request.header.Authorization
+        Name: cognito-authorizer-uoapool
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - "Fn::Join":
+              - ":"
+              - - "arn:aws:cognito-idp"
+                - Ref: "AWS::Region"
+                - Ref: "AWS::AccountId"
+                - "userpool/${file(env/${self:provider.stage}.json):cognitoUserPoolId}"
