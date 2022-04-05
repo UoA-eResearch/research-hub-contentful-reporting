@@ -50,7 +50,7 @@ async function runConnectivityReport(graph: ContentGraph, sheet: GoogleSpreadshe
 }
 
 function countLinks(nodeId: string, links: ContentLink[]): number {
-    return links.filter(link => link.source === nodeId).length
+    return links.filter(link => link.source === nodeId || link.target === nodeId).length
 }
 
 function hubUrl(node: ContentNode): string {
