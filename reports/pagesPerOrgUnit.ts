@@ -1,4 +1,3 @@
-import { ApolloError } from "@apollo/client/core";
 import { getApolloClient } from "../apolloClient";
 import { uploadCsv } from "../csvUpload";
 import { CurrentReportDoc } from "../googleDocsWrapper";
@@ -7,9 +6,9 @@ import { GetPagesPerOrgUnitDocument, GetPagesPerOrgUnitQuery } from "./types";
 let MAX_ITEMS = 10;
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software'| 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
+type HeaderTitle = 'Org Unit' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
 
-const sheetHeaderFields: HeaderTitle[] = [ 'Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
+const sheetHeaderFields: HeaderTitle[] = ['Org Unit', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
 
 
 export async function runPagesPerOrgUnit(chunkSize?: number): Promise<void> {
@@ -17,26 +16,28 @@ export async function runPagesPerOrgUnit(chunkSize?: number): Promise<void> {
         MAX_ITEMS = chunkSize;
     }
 
-    try{
+    try {
         const currentReportDoc = CurrentReportDoc.instance;
 
         const data = await getData();
 
-        uploadCsv(data, 'Pages Per Org Unit')
+        if (data) {
+            uploadCsv(data, 'Pages Per Org Unit')
 
-        const reportSheet = await currentReportDoc.getSheet('Pages Per Org Unit');
-        await reportSheet.clear();
-        await reportSheet.setHeaderRow(sheetHeaderFields);
-        await reportSheet.addRows(data);
+            const reportSheet = await currentReportDoc.getSheet('Pages Per Org Unit');
+            await reportSheet.clear();
+            await reportSheet.setHeaderRow(sheetHeaderFields);
+            await reportSheet.addRows(data);
+        }
     } catch (e) {
-        if (e instanceof ApolloError) {
-            console.error('Error in Pages Per Org Unit report: ' + e.graphQLErrors + e.message);
+        if (e instanceof Error) {
+            console.error(`Error in Pages Per Org Unit report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
 }
 
-async function getData(): Promise<HeaderTitleRow[]> {
+async function getData(): Promise<HeaderTitleRow[] | undefined> {
     const client = getApolloClient();
 
     const query = client.watchQuery({

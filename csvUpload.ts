@@ -3,7 +3,9 @@ import { S3Client, PutObjectCommand, PutObjectCommandInput } from '@aws-sdk/clie
 import * as fs from 'fs';
 import { CurrentReportWorkSheet, DataOverTimeWorkSheet } from "./googleDocsWrapper";
 
-export async function uploadCsv(data: unknown, sheet: CurrentReportWorkSheet | DataOverTimeWorkSheet, headers?: string[]): Promise<void> {
+type Table = Record<string, string | number | boolean>[]
+
+export async function uploadCsv(data: Table, sheet: CurrentReportWorkSheet | DataOverTimeWorkSheet, headers?: string[]): Promise<void> {
     const fileName = sheet.replace(/ /g, '-') + '.csv';
 
     const csvOptions: Options = {
