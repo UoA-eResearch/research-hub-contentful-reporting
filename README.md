@@ -13,7 +13,11 @@ This is an AWS lambda function written in `typescript` and managed by serverless
 
 ### Prerequisites
 
-This lambda function needs a token for access to the University of Auckland AWS test account. <!--add proper information here-->
+Install the serverless CLI
+```bash
+npm install -g serverless
+```
+This lambda function needs a token for access to the University of Auckland AWS test account. A token can be generated using [this](https://bitbucket.org/uoa/utility-aws-cli-access/) utility using University of Auckland credentials.
 
 ### Installation
 
