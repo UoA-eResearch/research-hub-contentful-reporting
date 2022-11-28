@@ -2,6 +2,7 @@ import { ClientAPI, createClient, Entry, Environment, Space } from "contentful-m
 
 type ContentType
     = 'article'
+    | 'capability'
     | 'caseStudy'
     | 'equipment'
     | 'event'
@@ -13,6 +14,7 @@ type ContentType
 const defaultSelectQuery = 'sys.id,fields.title,fields.slug,sys.contentType,fields.relatedItems';
 const queryMap: Map<ContentType, string> = new Map([
     ['article', defaultSelectQuery],
+    ['capability', defaultSelectQuery],
     ['caseStudy', defaultSelectQuery],
     ['equipment', defaultSelectQuery],
     ['event', defaultSelectQuery],

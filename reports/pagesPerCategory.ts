@@ -4,9 +4,9 @@ import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages';
+type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages' | 'Capabilities';
 
-const sheetHeaderFields: HeaderTitle[] = ['Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages'];
+const sheetHeaderFields: HeaderTitle[] = ['Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages', 'Capabilities'];
 
 
 
@@ -63,7 +63,8 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
             "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
             Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
-            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0
+            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0,
+            Capabilities: item?.linkedFrom?.capabilityCollection?.total ?? 0
         }
 
         return row;
@@ -83,7 +84,8 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
             "CaseStudies": item?.linkedFrom?.caseStudyCollection?.total ?? 0,
             Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
-            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0
+            "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0,
+            Capabilities: item?.linkedFrom?.capabilityCollection?.total ?? 0
         }
 
         return row;
