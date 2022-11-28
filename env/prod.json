@@ -7,5 +7,5 @@
     "CORS_ACCESS_CONTROL_ALLOW_ORIGINS": "*",
     "awsApiGatewayOauthScopes": "https://research-hub-prod.auckland.ac.nz/spa",
     "awsApiGatewayCustomDomainName": "apigw.prod.amazon.auckland.ac.nz",
-    "cognitoUserPoolId": "ap-southeast-2_8SJ2jkMu6"
+    "cognitoUserPoolId": "ap-southeast-2_B3Lx9B4bL"
 }
