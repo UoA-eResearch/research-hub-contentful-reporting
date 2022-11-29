@@ -82,7 +82,7 @@ function mapData(data: GetPagesPerOrgUnitQuery): HeaderTitleRow[] {
             Software: item?.linkedFrom?.softwareCollection?.total ?? 0,
             SubHubs: item?.linkedFrom?.subHubCollection?.total ?? 0,
             "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0,
-            Capabilities: item?.linkedFrom?.fundingCollection?.total ?? 0
+            Capabilities: item?.linkedFrom?.capabilityCollection?.total ?? 0
         };
 
         return row;
