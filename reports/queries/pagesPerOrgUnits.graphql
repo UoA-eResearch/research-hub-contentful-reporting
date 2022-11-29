@@ -7,6 +7,9 @@ query GetPagesPerOrgUnit($limit: Int!, $skip: Int) {
         fundingCollection(limit: 1) {
           total
 		}
+        capabilityCollection(limit: 1) {
+          total
+        }
         caseStudyCollection(limit: 1) {
           total
         }
