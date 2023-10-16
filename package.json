@@ -31,7 +31,7 @@
     "serverless": "^2.43.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^1.21.5",
+    "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/typescript": "^1.22.1",
     "@types/aws-lambda": "^8.10.76",
     "@types/google-spreadsheet": "^3.1.3",
