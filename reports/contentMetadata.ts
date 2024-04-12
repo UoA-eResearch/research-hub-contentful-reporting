@@ -15,41 +15,67 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages', 'Capabilities'];
-const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
+const metadataSheetHeaderFields: ContentMetadataSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages', 'Capabilities'];
+const sheetHeaderFields: ContentMetadataHeaderTitle[] = ['Title', 'Content Type', 'Link', 'Preview Link', 'Contentful Edit Link', 'Publisher', 'Publisher Email', 'Owner', 'Owner Email', 'Is SSO Protected', 'Research Stages', 'Research Stages 1', 'Research Stages 2', 'Research Stages 3', 'Research Stages 4', 'Categories', 'Categories 1', 'Categories 2', 'Categories 3', 'Categories 4', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Related Orgs 4', 'Next Review', 'Created By', 'Related Contacts', 'Related Contacts 1', 'Related Contacts 2', 'Related Contacts 3', 'Related Contacts 4', 'Is Searchable', 'First Published', 'Last Updated', 'Last Updated By', 'Tags', 'Tags 1', 'Tags 2', 'Tags 3', 'Tags 4', 'Status'];
 
 
-type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number | boolean };
-type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
+type ContentMetadataRow = { [key in ContentMetadataHeaderTitle]: string | number | boolean };
+type ContentMetadataHeaderTitle = 'Title' | 'Content Type' | 'Link' | 'Preview Link' | 'Contentful Edit Link' | 'Publisher' | 'Publisher Email' | 'Owner' | 'Owner Email' | 'Is SSO Protected' | 'Research Stages' | 'Research Stages 1' | 'Research Stages 2' | 'Research Stages 3' | 'Research Stages 4' | 'Categories' | 'Categories 1' | 'Categories 2' | 'Categories 3' | 'Categories 4' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Related Orgs 4' | 'Next Review' | 'Created By' | 'Related Contacts' | 'Related Contacts 1' | 'Related Contacts 2' | 'Related Contacts 3' | 'Related Contacts 4' | 'Is Searchable' | 'First Published' | 'Last Updated' | 'Last Updated By' | 'Tags' | 'Tags 1' | 'Tags 2' | 'Tags 3' | 'Tags 4' | 'Status';
 
-type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
-type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
+type ContentMetadataSummaryRow = { [key in ContentMetadataSummaryTitle]: string | number | boolean };
+type ContentMetadataSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
 
 type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
 type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
 
 type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability';
 
-interface ContentOverviewData {
-    id: string;
+interface ContentMetadataData {
     title: string;
-    slug: string;
-    lastUpdated: Date | null;
-    nextReview: Date | null;
-    owner: string;
-    publisher: string;
     contentType: ContentType;
-    linkedEntries: number;
+    link: string;
+    previewLink: string;
+    contentfulEditLink: string;
+    publisher: string;
+    publisherEmail: string;
+    owner: string;
+    ownerEmail: string;
     isSsoProtected: boolean | null | undefined;
-    isSearchable: boolean | null | undefined;
+    researchStages: number;
+    researchStages1: string;
+    researchStages2: string;
+    researchStages3: string;
+    researchStages4: string;
+    categories: number;
+    categories1: string;
+    categories2: string;
+    categories3: string;
+    categories4: string;
     relatedOrgs: number;
-    relatedOrgs1: string | null | undefined;
-    relatedOrgs2: string | null | undefined;
-    relatedOrgs3: string | null | undefined;
+    relatedOrgs1: string;
+    relatedOrgs2: string;
+    relatedOrgs3: string;
+    relatedOrgs4: string;
+    nextReview: Date | null;
+    createdBy: string;
+    relatedContacts: number;
+    relatedContacts1: string;
+    relatedContacts2: string;
+    relatedContacts3: string;
+    relatedContacts4: string;
+    isSearchable: boolean | null | undefined;
     firstPublishedAt: Date | null;
+    lastUpdated: Date | null;
+    lastUpdatedBy: string;
+    tags: number;
+    tags1: string;
+    tags2: string;
+    tags3: string;
+    tags4: string;
+    status: string
 }
 
-interface ContentOverviewSummaryData {
+interface ContentMetadataSummaryData {
     date: Date;
     subHubs: number;
     articles: number;
@@ -69,7 +95,7 @@ interface ContentOverviewSummaryData {
 
 // export function to run report
 
-export async function runContentOverview(chunkSize?: number): Promise<void> {
+export async function runContentMetadata(chunkSize?: number): Promise<void> {
     if (chunkSize) {
         GRAPHQL_CHUNK_SIZE = chunkSize;
     }
@@ -83,9 +109,9 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
 
 
         // upload to S3 bucket in the background
-        uploadCsv(data.report, 'Content Overview');
+        uploadCsv(data.report, 'Meta Data');
 
-        const reportSheet = await currentReportDoc.getSheet('Content Overview');
+        const reportSheet = await currentReportDoc.getSheet('Meta Data');
         await reportSheet.clear();
         await reportSheet.setHeaderRow(sheetHeaderFields);
         await reportSheet.addRows(data.report);
@@ -93,14 +119,14 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
 
         const headerValues = dataOverTimeSheet.headerValues;
-        if (headerValues !== overviewSheetHeaderFields) {
-            dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
+        if (headerValues !== metadataSheetHeaderFields) {
+            dataOverTimeSheet.setHeaderRow(metadataSheetHeaderFields);
         }
         await dataOverTimeSheet.addRow(data.summary);
 
-        // get data over time values from sheet and convert to ContentOverviewSummaryRow[] for csv upload
+        // get data over time values from sheet and convert to ContentMetadataSummaryRow[] for csv upload
         const dotsRows = (await dataOverTimeSheet.getRows()).map((row) => {
-            const summaryRow: ContentOverviewSummaryRow = {
+            const summaryRow: ContentMetadataSummaryRow = {
                 Date: row.Date,
                 SubHubs: row.SubHubs ?? 0,
                 Articles: row.Articles ?? 0,
@@ -125,7 +151,7 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         uploadCsv(dotsRows, 'Content Types')
     } catch (e) {
         if (e instanceof Error) {
-            console.error(`Error in Content Overview report: ${e.name}: ${e.message}`);
+            console.error(`Error in Meta Data report: ${e.name}: ${e.message}`);
         }
         throw e;
     }
@@ -154,7 +180,7 @@ function getTotal(query: ContentfulQueryType): number {
 
 // mapping function
 
-function mapReportData(query: ContentfulQueryType): Partial<ContentOverviewData>[] | undefined {
+function mapReportData(query: ContentfulQueryType): Partial<ContentMetadataData>[] | undefined {
     if ('articleCollection' in query) return mapReportDataArticles(query);
     if ('subHubCollection' in query) return mapReportDataSubHubs(query);
     if ('softwareCollection' in query) return mapReportDataSoftwares(query);
@@ -173,298 +199,845 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentOverviewData>
     throw new Error(`Unknown query type: ${query}`);
 }
 
+function getTitle(item: any): string {
+    return item?.title ? item.title : ''
+}
+
+function getTypeName(item: any): ContentType {
+    return item?.__typename
+}
+
+function getLink(item: any): string {
+    switch (process.env.CONTENTFUL_SPACE_ENV) {
+        case 'dev':
+            return `https://research-hub-dev.connect.test.amazon.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+        case 'prod':
+            return `https://research-hub.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+    }
+}
+
+function getPreviewLink(item: any): string {
+    switch (process.env.CONTENTFUL_SPACE_ENV) {
+        case 'dev':
+            return `https://research-hub-dev-preview.connect.test.amazon.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+        case 'prod':
+            return  `https://research-hub-preview.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+    }
+}
+
+function getContentfulLink(item: any): string {
+    return `https://app.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_SPACE_ENV}/entries/${item.id}`
+}
+
+function getPublisherName(item: any): string {
+    return item?.publisher?.name ? item.publisher.name : ''
+}
+
+function getPublisherEmail(item: any): string {
+    return item?.publisher?.email ? item.publisher.email : ''
+}
+
+function getOwnerName(item: any): string {
+    return item?.owner?.name ? item.owner.name : ''
+}
+
+function getOwnerEmail(item: any): string {
+    return item?.owner?.email ? item.owner.email : ''
+}
+
+function getIsSsoProtected(item: any): boolean {
+    return item?.ssoProtected
+}
+
+function getResearchStageCount(item: any): number {
+    return item?.stageCollection?.total
+}
+
+function getResearchStage(item: any, index: number): string {
+    index = Math.round(index);
+    if (!item?.stageCollection?.items || !Array.isArray(item.stageCollection?.items) ||
+        item.stageCollection.items.length < index + 1 || !item.stageCollection.items[index].name) {
+            return ''
+        }
+    return item.stageCollection.items[index].name
+}
+
+function getCategoryCount(item: any): number {
+    return item?.categoryCollection?.total
+}
+
+function getCategory(item: any, index: number): string {
+    index = Math.round(index);
+    if (!item?.categoryCollection?.items || !Array.isArray(item.categoryCollection?.items) ||
+        item.categoryCollection.items.length < index + 1 || !item.categoryCollection.items[index].name) {
+            return ''
+        }
+    return item.categoryCollection.items[index].name
+}
+
+function getRelatedOrgCount(item: any): number {
+    return item?.relatedOrgsCollection?.total
+}
+
+function getRelatedOrg(item: any, index: number): string {
+    index = Math.round(index);
+    if (!item?.relatedOrgsCollection?.items || !Array.isArray(item.relatedOrgsCollection?.items) ||
+        item.relatedOrgsCollection.items.length < index + 1 || !item.relatedOrgsCollection.items[index].name) {
+            return ''
+        }
+    return item.relatedOrgsCollection.items[index].name
+}
+
+function getNextReview(item: any): Date | null {
+    return item?.nextReview ? new Date(item.nextReview) : null
+}
+
+function getCreatedBy(item: any): string {
+    return '' //to be implemented
+}
+
+function getRelatedContactCount(item: any): number {
+    return item?.relatedContactsCollection?.total
+}
+
+function getRelatedContact(item: any, index: number): string {
+    index = Math.round(index);
+    if (!item?.relatedContactsCollection?.items || !Array.isArray(item.relatedContactsCollection?.items) ||
+        item.relatedContactsCollection.items.length < index + 1 || !item.relatedContactsCollection.items[index].name) {
+            return ''
+        }
+    return item.relatedContactsCollection.items[index].name
+}
+
+function getIsSearchable(item: any): boolean {
+    return item?.searchable
+}
+
+function getFirstPublishedAt(item: any): Date | null {
+    return item?.sys?.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+}
+
+function getLastUpdated(item: any): Date | null {
+    return item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null
+}
+
+function getLastUpdatedBy(item: any): string {
+    return '' //to be implemented
+}
+
+function getTagCount(item: any): number {
+    return 0 //to be implemented
+}
+function getTag(item: any, index: number): string {
+    return '' //to be implemented
+}
+
+function getStatus(item: any): string {
+    return '' //to be implemented
+}
+
 // This section contains implementations for parsing query data into tabular data
 // As the return types all slightly differ it was easier to implement one mapping function
 // for each type individually. However, this could be generalised and shortened.
 
-function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.subHubCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries:
-                (item?.relatedItemsCollection?.total ?? 0) +
-                (item?.internalPagesCollection?.total ?? 0),
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.articleCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.softwareCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.officialDocumentsCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : '',
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
-
         return rowData;
     });
 }
-function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.linkCardCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : '',
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
-        }
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
+                }
 
         return rowData;
     });
 }
-function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.eventCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.personCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.name ? item.name : '',
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.serviceCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
-function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.videoCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.title ? item.title : '',
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
-        }
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
+                }
 
         return rowData;
     });
 }
-function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.categoryCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            title: item?.name ? item.name : '',
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
 
-function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.equipmentCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null,
-            id: item?.sys.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries:
-                (item?.relatedItemsCollection?.total ?? 0) +
-                (item?.relatedDocsCollection?.total ?? 0),
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ?? '',
-            publisher: item?.publisher?.name ?? '',
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            slug: item?.slug ?? '',
-            title: item?.title ?? ''
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
 
-function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.caseStudyCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null,
-            id: item?.sys.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries:
-                (item?.relatedItemsCollection?.total ?? 0) +
-                (item?.relatedDocsCollection?.total ?? 0),
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ?? '',
-            publisher: item?.publisher?.name ?? '',
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            slug: item?.slug ?? '',
-            title: item?.title ?? ''
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
 
-function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.fundingCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null,
-            id: item?.sys.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys.publishedAt ? new Date(item.sys.publishedAt) : null,
-            linkedEntries:
-                (item?.relatedItemsCollection?.total ?? 0) +
-                (item?.relatedDocsCollection?.total ?? 0),
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ?? '',
-            publisher: item?.publisher?.name ?? '',
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            slug: item?.slug ?? '',
-            title: item?.title ?? ''
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
     });
 }
 
-function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.capabilityCollection?.items.map((item) => {
-        const rowData: Partial<ContentOverviewData> = {
-            contentType: item?.__typename,
-            id: item?.sys?.id,
-            isSearchable: item?.searchable,
-            isSsoProtected: item?.ssoProtected,
-            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
-            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
-            owner: item?.owner?.name ? item.owner.name : '',
-            publisher: item?.publisher?.name ? item.publisher.name : '',
-            slug: item?.slug ? item.slug : '',
-            title: item?.title ? item.title : '',
-            relatedOrgs: item?.relatedOrgsCollection?.total,
-            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
-            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
-            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
-            linkedEntries: item?.relatedItemsCollection?.total,
-            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
         }
 
         return rowData;
@@ -473,10 +1046,10 @@ function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Parti
 
 // get contentful data
 
-async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: ContentOverviewRow[] }> {
+async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: ContentMetadataData[] }> {
     const client = getApolloClient();
 
-    const report: Partial<ContentOverviewData>[] = [];
+    const report: Partial<ContentMetadataData>[] = [];
 
     const subHubRows = await getRows(client, GetAllSubHubsDocument);
     const articleRows = await getRows(client, GetAllArticlesDocument);
@@ -508,7 +1081,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     fundingRows ? report.push(...fundingRows.data) : null;
     capabilityRows ? report.push(...capabilityRows.data) : null;
 
-    const summary: ContentOverviewSummaryData = {
+    const summary: ContentMetadataSummaryData = {
         linkCards: linkCardRows?.total ?? 0,
         officialDocuments: officialDocumentRows?.total ?? 0,
         articles: articleRows?.total ?? 0,
@@ -527,7 +1100,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     };
 
     return {
-        summary: makeOverviewSummaryRow(summary),
+        summary: makeMetadataSummaryRow(summary),
         report: report.map((item) => makeRow(item))
     };
 }
@@ -541,8 +1114,8 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
 async function getRows(
     client: ApolloClient<NormalizedCacheObject>,
     query: ContentfulDocumentType,
-): Promise<{ data: Partial<ContentOverviewData>[], total: number } | undefined> {
-    const rows: Partial<ContentOverviewData>[] = [];
+): Promise<{ data: Partial<ContentMetadataData>[], total: number } | undefined> {
+    const rows: Partial<ContentMetadataData>[] = [];
 
     const queryObservable = client.watchQuery({
         query: query,
@@ -580,28 +1153,54 @@ async function getRows(
 }
 
 
-function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
+function makeRow(data: Partial<ContentMetadataData>): ContentMetadataRow {
     return {
+        "Title": data.title ?? '',
         "Content Type": data.contentType ?? '',
+        "Link": data.link ?? '',
+        "Preview Link": data.previewLink ?? '',
+        "Contentful Edit Link": data.contentfulEditLink ?? '',
+        "Publisher": data.publisher ?? '',
+        "Publisher Email": data.publisherEmail ?? '',
+        "Owner": data.owner ?? '',
+        "Owner Email": data.ownerEmail ?? '',
         "Is SSO Protected": data.isSsoProtected ?? '',
-        "Is Searchable": data.isSearchable ?? '',
-        "Last Updated": data.lastUpdated?.toISOString() ?? '',
-        "Linked Entries": data.linkedEntries ?? 0,
-        "Next Review": data.nextReview?.toISOString() ?? '',
+        "Research Stages": data.researchStages ?? 0,
+        "Research Stages 1": data.researchStages1 ?? '',
+        "Research Stages 2": data.researchStages2 ?? '',
+        "Research Stages 3": data.researchStages3 ?? '',
+        "Research Stages 4": data.researchStages4 ?? '',
+        "Categories": data.categories ?? 0,
+        "Categories 1": data.categories1 ?? '',
+        "Categories 2": data.categories2 ?? '',
+        "Categories 3": data.categories3 ?? '',
+        "Categories 4": data.categories4 ?? '',
         "Related Orgs": data.relatedOrgs ?? 0,
         "Related Orgs 1": data.relatedOrgs1 ?? '',
         "Related Orgs 2": data.relatedOrgs2 ?? '',
         "Related Orgs 3": data.relatedOrgs3 ?? '',
-        "ID": data.id ?? '',
-        "Owner": data.owner ?? '',
-        "Publisher": data.publisher ?? '',
-        "Slug": data.slug ?? '',
-        "Title": data.title ?? '',
-        "First Published": data.firstPublishedAt?.toISOString() ?? ''
+        "Related Orgs 4": data.relatedOrgs4 ?? '',
+        "Next Review": data.nextReview?.toISOString() ?? '',
+        //"Created By": data.createdBy ?? '',
+        "Related Contacts": data.relatedContacts ?? '',
+        "Related Contacts 1": data.relatedContacts1 ?? '',
+        "Related Contacts 2": data.relatedContacts2 ?? '',
+        "Related Contacts 3": data.relatedContacts3 ?? '',
+        "Related Contacts 4": data.relatedContacts4 ?? '',
+        "Is Searchable": data.isSearchable ?? '',
+        "First Published": data.firstPublishedAt?.toISOString() ?? '',
+        "Last Updated": data.lastUpdated?.toISOString() ?? '',
+        //"Last Updated By": data.lastUpdatedBy ?? '',
+        //"Tags": data.tags ?? 0,
+        //"Tags 1": data.tags1 ?? '',
+        //"Tags 2": data.tags2?? '',
+        //"Tags 3": data.tags3 ?? '',
+        //"Tags 4": data.tags4 ?? '',
+        //"Status": data.status ?? '',
     };
 }
 
-function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOverviewSummaryRow {
+function makeMetadataSummaryRow(data: ContentMetadataSummaryData): ContentMetadataSummaryRow {
     return {
         "Link Cards": data.linkCards,
         "Official Documents": data.officialDocuments,
