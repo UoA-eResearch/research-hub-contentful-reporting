@@ -256,7 +256,7 @@ function getResearchStageCount(item: any): number {
 function getResearchStage(item: any, index: number): string {
     index = Math.round(index);
     if (!item?.stageCollection?.items || !Array.isArray(item.stageCollection?.items) ||
-        item.stageCollection.items.length < index + 1 || !item.stageCollection.items[index].name) {
+        item.stageCollection.items.length < index + 1 || !item.stageCollection.items[index]?.name) {
             return ''
         }
     return item.stageCollection.items[index].name
@@ -269,7 +269,7 @@ function getCategoryCount(item: any): number {
 function getCategory(item: any, index: number): string {
     index = Math.round(index);
     if (!item?.categoryCollection?.items || !Array.isArray(item.categoryCollection?.items) ||
-        item.categoryCollection.items.length < index + 1 || !item.categoryCollection.items[index].name) {
+        item.categoryCollection.items.length < index + 1 || !item.categoryCollection.items[index]?.name) {
             return ''
         }
     return item.categoryCollection.items[index].name
@@ -282,7 +282,7 @@ function getRelatedOrgCount(item: any): number {
 function getRelatedOrg(item: any, index: number): string {
     index = Math.round(index);
     if (!item?.relatedOrgsCollection?.items || !Array.isArray(item.relatedOrgsCollection?.items) ||
-        item.relatedOrgsCollection.items.length < index + 1 || !item.relatedOrgsCollection.items[index].name) {
+        item.relatedOrgsCollection.items.length < index + 1 || !item.relatedOrgsCollection.items[index]?.name) {
             return ''
         }
     return item.relatedOrgsCollection.items[index].name
@@ -303,7 +303,7 @@ function getRelatedContactCount(item: any): number {
 function getRelatedContact(item: any, index: number): string {
     index = Math.round(index);
     if (!item?.relatedContactsCollection?.items || !Array.isArray(item.relatedContactsCollection?.items) ||
-        item.relatedContactsCollection.items.length < index + 1 || !item.relatedContactsCollection.items[index].name) {
+        item.relatedContactsCollection.items.length < index + 1 || !item.relatedContactsCollection.items[index]?.name) {
             return ''
         }
     return item.relatedContactsCollection.items[index].name
