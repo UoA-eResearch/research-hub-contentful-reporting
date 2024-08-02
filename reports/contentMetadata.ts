@@ -15,15 +15,15 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const metadataSheetHeaderFields: ContentMetadataSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages', 'Capabilities'];
-const sheetHeaderFields: ContentMetadataHeaderTitle[] = ['Title', 'Content Type', 'Link', 'Preview Link', 'Contentful Edit Link', 'Publisher', 'Publisher Email', 'Owner', 'Owner Email', 'Is SSO Protected', 'Research Stages', 'Research Stages 1', 'Research Stages 2', 'Research Stages 3', 'Research Stages 4', 'Categories', 'Categories 1', 'Categories 2', 'Categories 3', 'Categories 4', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Related Orgs 4', 'Next Review', 'Created By', 'Related Contacts', 'Related Contacts 1', 'Related Contacts 2', 'Related Contacts 3', 'Related Contacts 4', 'Is Searchable', 'First Published', 'Last Updated', 'Last Updated By', 'Tags', 'Tags 1', 'Tags 2', 'Tags 3', 'Tags 4', 'Status'];
+const metadataSheetHeaderFields: ContentMetadataSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities'];
+const sheetHeaderFields: ContentMetadataHeaderTitle[] = ['Title', 'Content Type', 'Page path', 'Link', 'Preview Link', 'Contentful Edit Link', 'Publisher', 'Publisher Email', 'Owner', 'Owner Email', 'Is SSO Protected', 'Research Stages', 'Research Stages 1', 'Research Stages 2', 'Research Stages 3', 'Research Stages 4', 'Categories', 'Categories 1', 'Categories 2', 'Categories 3', 'Categories 4', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Related Orgs 4', 'Next Review', 'Created By', 'Related Contacts', 'Related Contacts 1', 'Related Contacts 2', 'Related Contacts 3', 'Related Contacts 4', 'Is Searchable', 'First Published', 'Last Updated', 'Last Updated By', 'Tags', 'Tags 1', 'Tags 2', 'Tags 3', 'Tags 4', 'Status'];
 
 
 type ContentMetadataRow = { [key in ContentMetadataHeaderTitle]: string | number | boolean };
-type ContentMetadataHeaderTitle = 'Title' | 'Content Type' | 'Link' | 'Preview Link' | 'Contentful Edit Link' | 'Publisher' | 'Publisher Email' | 'Owner' | 'Owner Email' | 'Is SSO Protected' | 'Research Stages' | 'Research Stages 1' | 'Research Stages 2' | 'Research Stages 3' | 'Research Stages 4' | 'Categories' | 'Categories 1' | 'Categories 2' | 'Categories 3' | 'Categories 4' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Related Orgs 4' | 'Next Review' | 'Created By' | 'Related Contacts' | 'Related Contacts 1' | 'Related Contacts 2' | 'Related Contacts 3' | 'Related Contacts 4' | 'Is Searchable' | 'First Published' | 'Last Updated' | 'Last Updated By' | 'Tags' | 'Tags 1' | 'Tags 2' | 'Tags 3' | 'Tags 4' | 'Status';
+type ContentMetadataHeaderTitle = 'Title' | 'Content Type' | 'Page path' | 'Link' | 'Preview Link' | 'Contentful Edit Link' | 'Publisher' | 'Publisher Email' | 'Owner' | 'Owner Email' | 'Is SSO Protected' | 'Research Stages' | 'Research Stages 1' | 'Research Stages 2' | 'Research Stages 3' | 'Research Stages 4' | 'Categories' | 'Categories 1' | 'Categories 2' | 'Categories 3' | 'Categories 4' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Related Orgs 4' | 'Next Review' | 'Created By' | 'Related Contacts' | 'Related Contacts 1' | 'Related Contacts 2' | 'Related Contacts 3' | 'Related Contacts 4' | 'Is Searchable' | 'First Published' | 'Last Updated' | 'Last Updated By' | 'Tags' | 'Tags 1' | 'Tags 2' | 'Tags 3' | 'Tags 4' | 'Status';
 
 type ContentMetadataSummaryRow = { [key in ContentMetadataSummaryTitle]: string | number | boolean };
-type ContentMetadataSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
+type ContentMetadataSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
 
 type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
 type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
@@ -33,6 +33,7 @@ type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'Li
 interface ContentMetadataData {
     title: string;
     contentType: ContentType;
+    pagePath: string;
     link: string;
     previewLink: string;
     contentfulEditLink: string;
@@ -56,7 +57,7 @@ interface ContentMetadataData {
     relatedOrgs2: string;
     relatedOrgs3: string;
     relatedOrgs4: string;
-    nextReview: Date | null;
+    nextReview: string;
     createdBy: string;
     relatedContacts: number;
     relatedContacts1: string;
@@ -64,8 +65,8 @@ interface ContentMetadataData {
     relatedContacts3: string;
     relatedContacts4: string;
     isSearchable: boolean | null | undefined;
-    firstPublishedAt: Date | null;
-    lastUpdated: Date | null;
+    firstPublishedAt: string;
+    lastUpdated: string;
     lastUpdatedBy: string;
     tags: number;
     tags1: string;
@@ -87,7 +88,7 @@ interface ContentMetadataSummaryData {
     services: number;
     videos: number;
     categories: number;
-    equipment: number;
+    infrastructure: number;
     caseStudies: number;
     fundingPages: number;
     capabilities: number
@@ -138,7 +139,7 @@ export async function runContentMetadata(chunkSize?: number): Promise<void> {
                 Services: row.Services ?? 0,
                 Videos: row.Videos ?? 0,
                 Categories: row.Categories ?? 0,
-                Equipment: row.Equipment ?? 0,
+                Infrastructure: row.Infrastructure ?? 0,
                 CaseStudies: row.CaseStudies ?? 0,
                 "Funding Pages": row["Funding Pages"] ?? 0,
                 Capabilities: row.Capabilities ?? 0
@@ -191,7 +192,7 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentMetadataData>
     if ('serviceCollection' in query) return mapReportDataServices(query);
     if ('videoCollection' in query) return mapReportDataVideos(query);
     if ('categoryCollection' in query) return mapReportDataCategories(query);
-    if ('equipmentCollection' in query) return mapReportDataEquipment(query);
+    if ('equipmentCollection' in query) return mapReportDataInfrastructure(query);
     if ('caseStudyCollection' in query) return mapReportDataCaseStudies(query);
     if ('fundingCollection' in query) return mapReportDataFundingPages(query);
     if ('capabilityCollection' in query) return mapReportDataCapabilityPages(query);
@@ -203,30 +204,60 @@ function getTitle(item: any): string {
     return item?.title ? item.title : ''
 }
 
+function getNameField(item: any): string {
+    return item?.name ? item.name : ''
+}
+
 function getTypeName(item: any): ContentType {
-    return item?.__typename
+    return item?.__typename == "Equipment" ? "Infrastructure" : item?.__typename
+}
+
+function getPagePath(item: any): string {
+    if (item?.__typename && item?.slug) {
+        switch (process.env.CONTENTFUL_SPACE_ENV) {
+            case 'dev':
+                return `/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+            case 'prod':
+                return `/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+        }
+    }
+    return ''
 }
 
 function getLink(item: any): string {
-    switch (process.env.CONTENTFUL_SPACE_ENV) {
-        case 'dev':
-            return `https://research-hub-dev.connect.test.amazon.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
-        case 'prod':
-            return `https://research-hub.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+    if (item?.__typename && item?.slug) {
+        switch (process.env.CONTENTFUL_SPACE_ENV) {
+            case 'dev':
+                return `https://research-hub-dev.connect.test.amazon.auckland.ac.nz/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+            case 'prod':
+                return `https://research-hub.auckland.ac.nz/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+        }
     }
+    return ''
+}
+
+function getLinkField(item: any): string {
+    return item?.link ? item.link : ''
+}
+
+function getUrlField(item: any): string {
+    return item?.url ? item.url : ''
 }
 
 function getPreviewLink(item: any): string {
-    switch (process.env.CONTENTFUL_SPACE_ENV) {
-        case 'dev':
-            return `https://research-hub-dev-preview.connect.test.amazon.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
-        case 'prod':
-            return  `https://research-hub-preview.auckland.ac.nz/${item?.__typename}/${item?.slug ? item.slug : ''}`
+    if (item?.__typename && item?.slug) {
+        switch (process.env.CONTENTFUL_SPACE_ENV) {
+            case 'dev':
+                return `https://research-hub-dev-preview.connect.test.amazon.auckland.ac.nz/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+            case 'prod':
+                return  `https://research-hub-preview.auckland.ac.nz/${getTypeName(item).toLowerCase()}/${item.slug.toLowerCase()}`
+        }
     }
+    return ''
 }
 
 function getContentfulLink(item: any): string {
-    return `https://app.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_SPACE_ENV}/entries/${item.id}`
+    return item?.sys?.id ? `https://app.contentful.com/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/${process.env.CONTENTFUL_SPACE_ENV}/entries/${item.sys.id}` : ""
 }
 
 function getPublisherName(item: any): string {
@@ -288,8 +319,14 @@ function getRelatedOrg(item: any, index: number): string {
     return item.relatedOrgsCollection.items[index].name
 }
 
-function getNextReview(item: any): Date | null {
-    return item?.nextReview ? new Date(item.nextReview) : null
+function formatDate(date: Date): string {
+    let dateString = date.toISOString()
+    dateString = dateString.substring(0, dateString.indexOf('T'))
+    return dateString
+}
+
+function getNextReview(item: any): string {
+    return item?.nextReview ? formatDate(new Date(item.nextReview)) : ''
 }
 
 function getCreatedBy(item: any): string {
@@ -313,12 +350,12 @@ function getIsSearchable(item: any): boolean {
     return item?.searchable
 }
 
-function getFirstPublishedAt(item: any): Date | null {
-    return item?.sys?.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+function getFirstPublishedAt(item: any): string {
+    return item?.sys?.firstPublishedAt ? formatDate(new Date(item.sys.firstPublishedAt)) : ''
 }
 
-function getLastUpdated(item: any): Date | null {
-    return item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null
+function getLastUpdated(item: any): string {
+    return item?.sys?.publishedAt ? formatDate(new Date(item.sys.publishedAt)) : ''
 }
 
 function getLastUpdatedBy(item: any): string {
@@ -345,6 +382,7 @@ function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentMet
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -395,6 +433,7 @@ function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentM
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -445,6 +484,7 @@ function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<Conten
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -495,7 +535,8 @@ function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery)
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
-            link: getLink(item),
+            pagePath: getPagePath(item),
+            link: getUrlField(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
             publisher: getPublisherName(item),
@@ -544,7 +585,8 @@ function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<Conten
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
-            link: getLink(item),
+            pagePath: getPagePath(item),
+            link: getUrlField(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
             publisher: getPublisherName(item),
@@ -594,6 +636,7 @@ function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentMetad
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -642,9 +685,10 @@ function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentMetad
 function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.personCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
-            title: getTitle(item),
+            title: getNameField(item),
             contentType: getTypeName(item),
-            link: getLink(item),
+            pagePath: getPagePath(item),
+            link: getLinkField(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
             publisher: getPublisherName(item),
@@ -694,6 +738,7 @@ function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentM
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -744,7 +789,8 @@ function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentMetad
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
-            link: getLink(item),
+            pagePath: getPagePath(item),
+            link: getUrlField(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
             publisher: getPublisherName(item),
@@ -792,8 +838,9 @@ function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentMetad
 function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.categoryCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
-            title: getTitle(item),
+            title: getNameField(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -840,11 +887,12 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
     });
 }
 
-function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<ContentMetadataData>[] | undefined {
+function mapReportDataInfrastructure(queryData: GetAllEquipmentQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.equipmentCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -896,6 +944,7 @@ function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<Co
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -947,6 +996,7 @@ function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -998,6 +1048,7 @@ function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Parti
         const rowData: Partial<ContentMetadataData> = {
             title: getTitle(item),
             contentType: getTypeName(item),
+            pagePath: getPagePath(item),
             link: getLink(item),
             previewLink: getPreviewLink(item),
             contentfulEditLink: getContentfulLink(item),
@@ -1046,7 +1097,7 @@ function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Parti
 
 // get contentful data
 
-async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: ContentMetadataData[] }> {
+async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: ContentMetadataRow[] }> {
     const client = getApolloClient();
 
     const report: Partial<ContentMetadataData>[] = [];
@@ -1093,7 +1144,7 @@ async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: 
         softwares: softwareRows?.total ?? 0,
         subHubs: subHubRows?.total ?? 0,
         videos: videoRows?.total ?? 0,
-        equipment: equipmentRows?.total ?? 0,
+        infrastructure: equipmentRows?.total ?? 0,
         caseStudies: caseStudyRows?.total ?? 0,
         fundingPages: fundingRows?.total ?? 0,
         capabilities: capabilityRows?.total ?? 0
@@ -1157,6 +1208,7 @@ function makeRow(data: Partial<ContentMetadataData>): ContentMetadataRow {
     return {
         "Title": data.title ?? '',
         "Content Type": data.contentType ?? '',
+        "Page path" : data.pagePath ?? '',
         "Link": data.link ?? '',
         "Preview Link": data.previewLink ?? '',
         "Contentful Edit Link": data.contentfulEditLink ?? '',
@@ -1180,23 +1232,23 @@ function makeRow(data: Partial<ContentMetadataData>): ContentMetadataRow {
         "Related Orgs 2": data.relatedOrgs2 ?? '',
         "Related Orgs 3": data.relatedOrgs3 ?? '',
         "Related Orgs 4": data.relatedOrgs4 ?? '',
-        "Next Review": data.nextReview?.toISOString() ?? '',
-        //"Created By": data.createdBy ?? '',
+        "Next Review": data.nextReview ?? '',
+        "Created By": data.createdBy ?? '',
         "Related Contacts": data.relatedContacts ?? '',
         "Related Contacts 1": data.relatedContacts1 ?? '',
         "Related Contacts 2": data.relatedContacts2 ?? '',
         "Related Contacts 3": data.relatedContacts3 ?? '',
         "Related Contacts 4": data.relatedContacts4 ?? '',
         "Is Searchable": data.isSearchable ?? '',
-        "First Published": data.firstPublishedAt?.toISOString() ?? '',
-        "Last Updated": data.lastUpdated?.toISOString() ?? '',
-        //"Last Updated By": data.lastUpdatedBy ?? '',
-        //"Tags": data.tags ?? 0,
-        //"Tags 1": data.tags1 ?? '',
-        //"Tags 2": data.tags2?? '',
-        //"Tags 3": data.tags3 ?? '',
-        //"Tags 4": data.tags4 ?? '',
-        //"Status": data.status ?? '',
+        "First Published": data.firstPublishedAt ?? '',
+        "Last Updated": data.lastUpdated ?? '',
+        "Last Updated By": data.lastUpdatedBy ?? '',
+        "Tags": data.tags ?? 0,
+        "Tags 1": data.tags1 ?? '',
+        "Tags 2": data.tags2?? '',
+        "Tags 3": data.tags3 ?? '',
+        "Tags 4": data.tags4 ?? '',
+        "Status": data.status ?? '',
     };
 }
 
@@ -1213,7 +1265,7 @@ function makeMetadataSummaryRow(data: ContentMetadataSummaryData): ContentMetada
         Software: data.softwares,
         SubHubs: data.subHubs,
         Videos: data.videos,
-        Equipment: data.equipment,
+        Infrastructure: data.infrastructure,
         CaseStudies: data.caseStudies,
         "Funding Pages": data.fundingPages,
         Capabilities: data.capabilities

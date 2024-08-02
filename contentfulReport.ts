@@ -10,8 +10,8 @@ import { runContentMetadata } from "./reports/contentMetadata";
 
 export async function contentful(): Promise<APIGatewayProxyResult> {
     try {
-        await runContentMetadata(50);
         await runContentOverview(50);
+        await runContentMetadata(50);
         await runPagesPerCategory();
         await runPagesPerOrgUnit(10);
         await runContentGraphReports();

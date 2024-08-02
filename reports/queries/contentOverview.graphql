@@ -7,24 +7,44 @@ query GetAllSubHubs($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -48,24 +68,44 @@ query GetAllArticles($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -86,24 +126,44 @@ query GetAllCapabilities($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -124,24 +184,44 @@ query GetAllSoftwares($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -162,7 +242,13 @@ query GetAllOfficialDocuments($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       title
+      url
     }
   }
 }
@@ -176,7 +262,13 @@ query GetAllLinkCards($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       title
+      url
     }
   }
 }
@@ -190,24 +282,44 @@ query GetAllEvents($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -228,6 +340,11 @@ query GetAllPersons($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       name
     }
   }
@@ -242,24 +359,44 @@ query GetAllServices($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -280,7 +417,13 @@ query GetAllVideos($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       title
+      url
     }
   }
 }
@@ -293,6 +436,11 @@ query GetAllCategories($limit: Int!, $skip: Int!) {
         id
         publishedAt
         firstPublishedAt
+      }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
       }
       name
     }
@@ -308,25 +456,45 @@ query GetAllEquipment($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       searchable
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -350,25 +518,45 @@ query GetAllCaseStudies($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       searchable
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }
@@ -392,25 +580,45 @@ query GetAllFundingPages($limit: Int!, $skip: Int!) {
         publishedAt
         firstPublishedAt
       }
+      contentfulMetadata {
+        tags(limit: 4) {
+          name
+        }
+      }
       nextReview
       owner {
         name
+        email
       }
       publisher {
         name
+        email
       }
       searchable
       ssoProtected
       title
       slug
-      relatedOrgsCollection(limit: 3) {
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
         total
         items {
           name
         }
       }
       searchable
-      stageCollection {
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
         items {
           name
         }

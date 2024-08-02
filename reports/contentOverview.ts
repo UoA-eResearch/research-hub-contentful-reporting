@@ -15,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Equipment', 'CaseStudies', 'Funding Pages', 'Capabilities'];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities'];
 const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
@@ -23,7 +23,7 @@ type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number
 type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
-type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Equipment' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
+type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
 
 type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
 type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
@@ -61,7 +61,7 @@ interface ContentOverviewSummaryData {
     services: number;
     videos: number;
     categories: number;
-    equipment: number;
+    infrastructure: number;
     caseStudies: number;
     fundingPages: number;
     capabilities: number
@@ -112,7 +112,7 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
                 Services: row.Services ?? 0,
                 Videos: row.Videos ?? 0,
                 Categories: row.Categories ?? 0,
-                Equipment: row.Equipment ?? 0,
+                Infrastructure: row.Infrastructure ?? 0,
                 CaseStudies: row.CaseStudies ?? 0,
                 "Funding Pages": row["Funding Pages"] ?? 0,
                 Capabilities: row.Capabilities ?? 0
@@ -165,7 +165,7 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentOverviewData>
     if ('serviceCollection' in query) return mapReportDataServices(query);
     if ('videoCollection' in query) return mapReportDataVideos(query);
     if ('categoryCollection' in query) return mapReportDataCategories(query);
-    if ('equipmentCollection' in query) return mapReportDataEquipment(query);
+    if ('equipmentCollection' in query) return mapReportDataInfrastructure(query);
     if ('caseStudyCollection' in query) return mapReportDataCaseStudies(query);
     if ('fundingCollection' in query) return mapReportDataFundingPages(query);
     if ('capabilityCollection' in query) return mapReportDataCapabilityPages(query);
@@ -365,7 +365,7 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
     });
 }
 
-function mapReportDataEquipment(queryData: GetAllEquipmentQuery): Partial<ContentOverviewData>[] | undefined {
+function mapReportDataInfrastructure(queryData: GetAllEquipmentQuery): Partial<ContentOverviewData>[] | undefined {
     return queryData.equipmentCollection?.items.map((item) => {
         const rowData: Partial<ContentOverviewData> = {
             contentType: item?.__typename,
@@ -520,7 +520,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
         softwares: softwareRows?.total ?? 0,
         subHubs: subHubRows?.total ?? 0,
         videos: videoRows?.total ?? 0,
-        equipment: equipmentRows?.total ?? 0,
+        infrastructure: equipmentRows?.total ?? 0,
         caseStudies: caseStudyRows?.total ?? 0,
         fundingPages: fundingRows?.total ?? 0,
         capabilities: capabilityRows?.total ?? 0
@@ -582,7 +582,7 @@ async function getRows(
 
 function makeRow(data: Partial<ContentOverviewData>): ContentOverviewRow {
     return {
-        "Content Type": data.contentType ?? '',
+        "Content Type": data.contentType == "Equipment" ? "Infrastructure" : data.contentType ?? '',
         "Is SSO Protected": data.isSsoProtected ?? '',
         "Is Searchable": data.isSearchable ?? '',
         "Last Updated": data.lastUpdated?.toISOString() ?? '',
@@ -614,7 +614,7 @@ function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOvervi
         Software: data.softwares,
         SubHubs: data.subHubs,
         Videos: data.videos,
-        Equipment: data.equipment,
+        Infrastructure: data.infrastructure,
         CaseStudies: data.caseStudies,
         "Funding Pages": data.fundingPages,
         Capabilities: data.capabilities
