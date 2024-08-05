@@ -363,10 +363,16 @@ function getLastUpdatedBy(item: any): string {
 }
 
 function getTagCount(item: any): number {
-    return 0 //to be implemented
+    return item?.contentfulMetadata?.tags?.length
 }
+
 function getTag(item: any, index: number): string {
-    return '' //to be implemented
+    index = Math.round(index);
+    if (!item?.contentfulMetadata?.tags || !Array.isArray(item.contentfulMetadata?.tags) ||
+        item.contentfulMetadata.tags.length < index + 1 || !item.contentfulMetadata.tags[index]?.name) {
+            return ''
+        }
+    return item.contentfulMetadata.tags[index].name
 }
 
 function getStatus(item: any): string {
@@ -1245,7 +1251,7 @@ function makeRow(data: Partial<ContentMetadataData>): ContentMetadataRow {
         "Last Updated By": data.lastUpdatedBy ?? '',
         "Tags": data.tags ?? 0,
         "Tags 1": data.tags1 ?? '',
-        "Tags 2": data.tags2?? '',
+        "Tags 2": data.tags2 ?? '',
         "Tags 3": data.tags3 ?? '',
         "Tags 4": data.tags4 ?? '',
         "Status": data.status ?? '',
