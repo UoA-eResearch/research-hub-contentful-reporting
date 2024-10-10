@@ -350,6 +350,64 @@ query GetAllPersons($limit: Int!, $skip: Int!) {
   }
 }
 
+query GetAllProcesses($limit: Int!, $skip: Int!) {
+  processCollection(preview: true, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        publishedAt
+        firstPublishedAt
+      }
+      contentfulMetadata {
+        tags {
+          name
+        }
+      }
+      nextReview
+      owner {
+        name
+        email
+      }
+      publisher {
+        name
+        email
+      }
+      ssoProtected
+      title
+      slug
+      relatedOrgsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedContactsCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      searchable
+      stageCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      categoryCollection(limit: 4) {
+        total
+        items {
+          name
+        }
+      }
+      relatedProcessesCollection(limit: 1) {
+        total
+      }
+    }
+  }
+}
+
 query GetAllServices($limit: Int!, $skip: Int!) {
   serviceCollection(preview: true, limit: $limit, skip: $skip) {
     total

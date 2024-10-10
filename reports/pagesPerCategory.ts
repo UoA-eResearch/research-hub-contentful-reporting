@@ -4,9 +4,9 @@ import { CurrentReportDoc } from "../googleDocsWrapper";
 import { GetPagesPerCategoryDocument, GetPagesPerCategoryQuery, GetPagesPerStageDocument, GetPagesPerStageQuery } from "./types";
 
 type HeaderTitleRow = { [key in HeaderTitle]: string | number | boolean };
-type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages' | 'Capabilities' | 'Infrastructure';
+type HeaderTitle = 'Category/Stage' | 'Display Order' | 'SubHubs' | 'Articles' | 'Software' | 'Events' | 'Services' | 'CaseStudies' | 'Equipment' | 'Funding Pages' | 'Capabilities' | 'Infrastructure' | 'Processes';
 
-const sheetHeaderFields: HeaderTitle[] = ['Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages', 'Capabilities', 'Infrastructure'];
+const sheetHeaderFields: HeaderTitle[] = ['Category/Stage', 'Display Order', 'SubHubs', 'Articles', 'Software', 'Events', 'Services', 'CaseStudies', 'Equipment', 'Funding Pages', 'Capabilities', 'Infrastructure', 'Processes'];
 
 
 
@@ -65,7 +65,8 @@ function mapCategoryData(queryData: GetPagesPerCategoryQuery): HeaderTitleRow[] 
             Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
             "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0,
             Capabilities: item?.linkedFrom?.capabilityCollection?.total ?? 0,
-            Infrastructure: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            Infrastructure: item?.linkedFrom?.equipmentCollection?.total ?? 0,
+            Processes: item?.linkedFrom?.processCollection?.total ?? 0
         }
 
         return row;
@@ -87,7 +88,8 @@ function mapStageData(queryData: GetPagesPerStageQuery): HeaderTitleRow[] {
             Equipment: item?.linkedFrom?.equipmentCollection?.total ?? 0,
             "Funding Pages": item?.linkedFrom?.fundingCollection?.total ?? 0,
             Capabilities: item?.linkedFrom?.capabilityCollection?.total ?? 0,
-            Infrastructure: item?.linkedFrom?.equipmentCollection?.total ?? 0
+            Infrastructure: item?.linkedFrom?.equipmentCollection?.total ?? 0,
+            Processes: item?.linkedFrom?.processCollection?.total ?? 0
         }
 
         return row;

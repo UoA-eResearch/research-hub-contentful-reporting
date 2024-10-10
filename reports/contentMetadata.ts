@@ -1,7 +1,7 @@
 import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
-import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCapabilitiesDocument, GetAllCapabilitiesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
+import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCapabilitiesDocument, GetAllCapabilitiesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllProcessesDocument, GetAllProcessesQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
 import { uploadCsv } from "../csvUpload";
 import { ResultOf } from "@graphql-typed-document-node/core";
 
@@ -15,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const metadataSheetHeaderFields: ContentMetadataSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities'];
+const metadataSheetHeaderFields: ContentMetadataSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities', 'Processes'];
 const sheetHeaderFields: ContentMetadataHeaderTitle[] = ['Title', 'Content Type', 'Page path', 'Link', 'Preview Link', 'Contentful Edit Link', 'Publisher', 'Publisher Email', 'Owner', 'Owner Email', 'Is SSO Protected', 'Research Stages', 'Research Stages 1', 'Research Stages 2', 'Research Stages 3', 'Research Stages 4', 'Categories', 'Categories 1', 'Categories 2', 'Categories 3', 'Categories 4', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Related Orgs 4', 'Next Review', 'Created By', 'Related Contacts', 'Related Contacts 1', 'Related Contacts 2', 'Related Contacts 3', 'Related Contacts 4', 'Is Searchable', 'First Published', 'Last Updated', 'Last Updated By', 'Tags', 'Tags 1', 'Tags 2', 'Tags 3', 'Tags 4', 'Status'];
 
 
@@ -23,12 +23,12 @@ type ContentMetadataRow = { [key in ContentMetadataHeaderTitle]: string | number
 type ContentMetadataHeaderTitle = 'Title' | 'Content Type' | 'Page path' | 'Link' | 'Preview Link' | 'Contentful Edit Link' | 'Publisher' | 'Publisher Email' | 'Owner' | 'Owner Email' | 'Is SSO Protected' | 'Research Stages' | 'Research Stages 1' | 'Research Stages 2' | 'Research Stages 3' | 'Research Stages 4' | 'Categories' | 'Categories 1' | 'Categories 2' | 'Categories 3' | 'Categories 4' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Related Orgs 4' | 'Next Review' | 'Created By' | 'Related Contacts' | 'Related Contacts 1' | 'Related Contacts 2' | 'Related Contacts 3' | 'Related Contacts 4' | 'Is Searchable' | 'First Published' | 'Last Updated' | 'Last Updated By' | 'Tags' | 'Tags 1' | 'Tags 2' | 'Tags 3' | 'Tags 4' | 'Status';
 
 type ContentMetadataSummaryRow = { [key in ContentMetadataSummaryTitle]: string | number | boolean };
-type ContentMetadataSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
+type ContentMetadataSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities' | 'Processes';
 
-type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
+type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllProcessesDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
 type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
 
-type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability';
+type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability' | 'Process';
 
 interface ContentMetadataData {
     title: string;
@@ -91,7 +91,8 @@ interface ContentMetadataSummaryData {
     infrastructure: number;
     caseStudies: number;
     fundingPages: number;
-    capabilities: number
+    capabilities: number;
+    processes: number;
 }
 
 // export function to run report
@@ -142,7 +143,8 @@ export async function runContentMetadata(chunkSize?: number): Promise<void> {
                 Infrastructure: row.Infrastructure ?? 0,
                 CaseStudies: row.CaseStudies ?? 0,
                 "Funding Pages": row["Funding Pages"] ?? 0,
-                Capabilities: row.Capabilities ?? 0
+                Capabilities: row.Capabilities ?? 0,
+                Processes: row.Processes ?? 0
             }
 
             return summaryRow;
@@ -175,6 +177,7 @@ function getTotal(query: ContentfulQueryType): number {
     if ('caseStudyCollection' in query) return query.caseStudyCollection?.total ?? 0;
     if ('fundingCollection' in query) return query.fundingCollection?.total ?? 0;
     if ('capabilityCollection' in query) return query.capabilityCollection?.total ?? 0;
+    if ('processCollection' in query) return query.processCollection?.total ?? 0;
 
     throw new Error(`Unknown query type: ${query}`);
 }
@@ -196,6 +199,7 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentMetadataData>
     if ('caseStudyCollection' in query) return mapReportDataCaseStudies(query);
     if ('fundingCollection' in query) return mapReportDataFundingPages(query);
     if ('capabilityCollection' in query) return mapReportDataCapabilityPages(query);
+    if ('processCollection' in query) return mapReportDataProcesses(query);
 
     throw new Error(`Unknown query type: ${query}`);
 }
@@ -739,6 +743,57 @@ function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentMet
         return rowData;
     });
 }
+function mapReportDataProcesses(queryData: GetAllProcessesQuery): Partial<ContentMetadataData>[] | undefined {
+    return queryData.processCollection?.items.map((item) => {
+        const rowData: Partial<ContentMetadataData> = {
+            title: getTitle(item),
+            contentType: getTypeName(item),
+            pagePath: getPagePath(item),
+            link: getLink(item),
+            previewLink: getPreviewLink(item),
+            contentfulEditLink: getContentfulLink(item),
+            publisher: getPublisherName(item),
+            publisherEmail: getPublisherEmail(item),
+            owner: getOwnerName(item),
+            ownerEmail: getOwnerEmail(item),
+            isSsoProtected: getIsSsoProtected(item),
+            researchStages: getResearchStageCount(item),
+            researchStages1: getResearchStage(item, 0),
+            researchStages2: getResearchStage(item, 1),
+            researchStages3: getResearchStage(item, 2),
+            researchStages4: getResearchStage(item, 3),
+            categories: getCategoryCount(item),
+            categories1: getCategory(item, 0),
+            categories2: getCategory(item, 1),
+            categories3: getCategory(item, 2),
+            categories4: getCategory(item, 3),
+            relatedOrgs: getRelatedOrgCount(item),
+            relatedOrgs1: getRelatedOrg(item, 0),
+            relatedOrgs2: getRelatedOrg(item, 1),
+            relatedOrgs3: getRelatedOrg(item, 2),
+            relatedOrgs4: getRelatedOrg(item, 3),
+            nextReview: getNextReview(item),
+            createdBy: getCreatedBy(item),
+            relatedContacts: getRelatedContactCount(item),
+            relatedContacts1: getRelatedContact(item, 0),
+            relatedContacts2: getRelatedContact(item, 1),
+            relatedContacts3: getRelatedContact(item, 2),
+            relatedContacts4: getRelatedContact(item, 3),
+            isSearchable: getIsSearchable(item),
+            firstPublishedAt: getFirstPublishedAt(item),
+            lastUpdated: getLastUpdated(item),
+            lastUpdatedBy: getLastUpdatedBy(item),
+            tags: getTagCount(item),
+            tags1: getTag(item, 0),
+            tags2: getTag(item, 1),
+            tags3: getTag(item, 2),
+            tags4: getTag(item, 3),
+            status: getStatus(item)
+        }
+
+        return rowData;
+    });
+}
 function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.serviceCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
@@ -1122,6 +1177,7 @@ async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: 
     const caseStudyRows = await getRows(client, GetAllCaseStudiesDocument);
     const fundingRows = await getRows(client, GetAllFundingPagesDocument);
     const capabilityRows = await getRows(client, GetAllCapabilitiesDocument);
+    const processRows = await getRows(client, GetAllProcessesDocument);
 
     subHubRows ? report.push(...subHubRows.data) : null;
     articleRows ? report.push(...articleRows.data) : null;
@@ -1137,6 +1193,7 @@ async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: 
     caseStudyRows ? report.push(...caseStudyRows.data) : null;
     fundingRows ? report.push(...fundingRows.data) : null;
     capabilityRows ? report.push(...capabilityRows.data) : null;
+    processRows ? report.push(...processRows.data) : null;
 
     const summary: ContentMetadataSummaryData = {
         linkCards: linkCardRows?.total ?? 0,
@@ -1153,7 +1210,8 @@ async function getData(): Promise<{ summary: ContentMetadataSummaryRow, report: 
         infrastructure: equipmentRows?.total ?? 0,
         caseStudies: caseStudyRows?.total ?? 0,
         fundingPages: fundingRows?.total ?? 0,
-        capabilities: capabilityRows?.total ?? 0
+        capabilities: capabilityRows?.total ?? 0,
+        processes: processRows?.total ?? 0
     };
 
     return {
@@ -1274,7 +1332,8 @@ function makeMetadataSummaryRow(data: ContentMetadataSummaryData): ContentMetada
         Infrastructure: data.infrastructure,
         CaseStudies: data.caseStudies,
         "Funding Pages": data.fundingPages,
-        Capabilities: data.capabilities
+        Capabilities: data.capabilities,
+        Processes: data.processes
     };
 }
 
