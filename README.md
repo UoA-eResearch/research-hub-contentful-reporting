@@ -46,7 +46,7 @@ to run the lambda function locally. This should set up an endpoint accepting POS
 ### Deploy reporting lambda to AWS
 
 ```bash
-sls deploy [--stage <dev | report>] --config report.yml
+sls deploy [--stage <dev | report>] --config report.yml --aws-profile saml
 ```
 
 >Note: the `report` stage is only for the reporting lambda and corresponds to the 'production' version. It will gather information from the contentful 'prod' environment, but the deployment takes place into the AWS nonProd account.

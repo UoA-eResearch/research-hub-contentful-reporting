@@ -690,3 +690,152 @@ query GetAllFundingPages($limit: Int!, $skip: Int!) {
     }
   }
 }
+query GetAllPublicSubHubs($limit: Int!, $skip: Int!) {
+  subHubCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicArticles($limit: Int!, $skip: Int!) {
+  articleCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicCapabilities($limit: Int!, $skip: Int!) {
+  capabilityCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicSoftwares($limit: Int!, $skip: Int!) {
+  softwareCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicOfficialDocuments($limit: Int!, $skip: Int!) {
+  officialDocumentsCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicLinkCards($limit: Int!, $skip: Int!) {
+  linkCardCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicEvents($limit: Int!, $skip: Int!) {
+  eventCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicPersons($limit: Int!, $skip: Int!) {
+  personCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicProcesses($limit: Int!, $skip: Int!) {
+  processCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicServices($limit: Int!, $skip: Int!) {
+  serviceCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicVideos($limit: Int!, $skip: Int!) {
+  videoCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicCategories($limit: Int!, $skip: Int!) {
+  categoryCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicEquipment($limit: Int!, $skip: Int!) {
+  equipmentCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicCaseStudies($limit: Int!, $skip: Int!) {
+  caseStudyCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}
+
+query GetAllPublicFundingPages($limit: Int!, $skip: Int!) {
+  fundingCollection(preview: false, limit: $limit, skip: $skip) {
+    items {
+      sys {
+        id
+      }
+    }
+  }
+}

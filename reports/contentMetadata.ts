@@ -1,7 +1,29 @@
 import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
-import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCapabilitiesDocument, GetAllCapabilitiesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllProcessesDocument, GetAllProcessesQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
+import { GetAllArticlesDocument, GetAllArticlesQuery,
+    GetAllCapabilitiesDocument, GetAllCapabilitiesQuery,
+    GetAllCaseStudiesDocument, GetAllCaseStudiesQuery,
+    GetAllCategoriesDocument, GetAllCategoriesQuery,
+    GetAllEquipmentDocument, GetAllEquipmentQuery,
+    GetAllEventsDocument, GetAllEventsQuery,
+    GetAllFundingPagesDocument, GetAllFundingPagesQuery,
+    GetAllLinkCardsDocument, GetAllLinkCardsQuery,
+    GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery,
+    GetAllPersonsDocument, GetAllPersonsQuery,
+    GetAllProcessesDocument, GetAllProcessesQuery,
+    GetAllServicesDocument, GetAllServicesQuery,
+    GetAllSoftwaresDocument, GetAllSoftwaresQuery,
+    GetAllSubHubsDocument, GetAllSubHubsQuery,
+    GetAllVideosDocument, GetAllVideosQuery,
+    GetAllPublicArticlesDocument, GetAllPublicCapabilitiesDocument,
+    GetAllPublicCaseStudiesDocument, GetAllPublicCategoriesDocument,
+    GetAllPublicEquipmentDocument, GetAllPublicEventsDocument,
+    GetAllPublicFundingPagesDocument, GetAllPublicLinkCardsDocument,
+    GetAllPublicOfficialDocumentsDocument, GetAllPublicPersonsDocument,
+    GetAllPublicProcessesDocument, GetAllPublicServicesDocument,
+    GetAllPublicSoftwaresDocument, GetAllPublicSubHubsDocument,
+    GetAllPublicVideosDocument} from "./types";
 import { uploadCsv } from "../csvUpload";
 import { ResultOf } from "@graphql-typed-document-node/core";
 
@@ -31,6 +53,7 @@ type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
 type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability' | 'Process';
 
 interface ContentMetadataData {
+    id: string;
     title: string;
     contentType: ContentType;
     pagePath: string;
@@ -95,6 +118,8 @@ interface ContentMetadataSummaryData {
     processes: number;
 }
 
+let publicPages: any = []
+
 // export function to run report
 
 export async function runContentMetadata(chunkSize?: number): Promise<void> {
@@ -107,6 +132,7 @@ export async function runContentMetadata(chunkSize?: number): Promise<void> {
         const dataOverTimeDoc = DataOverTimeDoc.instance;
 
 
+        publicPages = (await getPublicPages()).report;
         const data = await getData();
 
 
@@ -202,6 +228,10 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentMetadataData>
     if ('processCollection' in query) return mapReportDataProcesses(query);
 
     throw new Error(`Unknown query type: ${query}`);
+}
+
+function getId(item: any): string {
+    return item?.sys?.id ? item.sys.id : ''
 }
 
 function getTitle(item: any): string {
@@ -380,7 +410,7 @@ function getTag(item: any, index: number): string {
 }
 
 function getStatus(item: any): string {
-    return '' //to be implemented
+    return publicPages?.includes(item?.sys?.id) ? 'Published' : "Non-published"
 }
 
 // This section contains implementations for parsing query data into tabular data
@@ -390,6 +420,7 @@ function getStatus(item: any): string {
 function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.subHubCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -441,6 +472,7 @@ function mapReportDataSubHubs(queryData: GetAllSubHubsQuery): Partial<ContentMet
 function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.articleCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -492,6 +524,7 @@ function mapReportDataArticles(queryData: GetAllArticlesQuery): Partial<ContentM
 function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.softwareCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -543,6 +576,7 @@ function mapReportDataSoftwares(queryData: GetAllSoftwaresQuery): Partial<Conten
 function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.officialDocumentsCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -593,6 +627,7 @@ function mapReportDataOfficialDocuments(queryData: GetAllOfficialDocumentsQuery)
 function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.linkCardCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -644,6 +679,7 @@ function mapReportDataLinkCards(queryData: GetAllLinkCardsQuery): Partial<Conten
 function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.eventCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -695,6 +731,7 @@ function mapReportDataEvents(queryData: GetAllEventsQuery): Partial<ContentMetad
 function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.personCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getNameField(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -746,6 +783,7 @@ function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentMet
 function mapReportDataProcesses(queryData: GetAllProcessesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.processCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -797,6 +835,7 @@ function mapReportDataProcesses(queryData: GetAllProcessesQuery): Partial<Conten
 function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.serviceCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -848,6 +887,7 @@ function mapReportDataServices(queryData: GetAllServicesQuery): Partial<ContentM
 function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.videoCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -899,6 +939,7 @@ function mapReportDataVideos(queryData: GetAllVideosQuery): Partial<ContentMetad
 function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.categoryCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getNameField(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -951,6 +992,7 @@ function mapReportDataCategories(queryData: GetAllCategoriesQuery): Partial<Cont
 function mapReportDataInfrastructure(queryData: GetAllEquipmentQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.equipmentCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -1003,6 +1045,7 @@ function mapReportDataInfrastructure(queryData: GetAllEquipmentQuery): Partial<C
 function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.caseStudyCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -1055,6 +1098,7 @@ function mapReportDataCaseStudies(queryData: GetAllCaseStudiesQuery): Partial<Co
 function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.fundingCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -1107,6 +1151,7 @@ function mapReportDataFundingPages(queryData: GetAllFundingPagesQuery): Partial<
 function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Partial<ContentMetadataData>[] | undefined {
     return queryData.capabilityCollection?.items.map((item) => {
         const rowData: Partial<ContentMetadataData> = {
+            id: getId(item),
             title: getTitle(item),
             contentType: getTypeName(item),
             pagePath: getPagePath(item),
@@ -1154,6 +1199,50 @@ function mapReportDataCapabilityPages(queryData: GetAllCapabilitiesQuery): Parti
 
         return rowData;
     })
+}
+
+// Get list of public pages
+
+async function getPublicPages(): Promise<{ report: (string|undefined)[] }> {
+    const client = getApolloClient();
+
+    const report: Partial<ContentMetadataData>[] = [];
+
+    const subHubRows = await getRows(client, GetAllPublicSubHubsDocument);
+    const articleRows = await getRows(client, GetAllPublicArticlesDocument);
+    const softwareRows = await getRows(client, GetAllPublicSoftwaresDocument);
+    const officialDocumentRows = await getRows(client, GetAllPublicOfficialDocumentsDocument);
+    const linkCardRows = await getRows(client, GetAllPublicLinkCardsDocument);
+    const eventRows = await getRows(client, GetAllPublicEventsDocument);
+    const personRows = await getRows(client, GetAllPublicPersonsDocument);
+    const serviceRows = await getRows(client, GetAllPublicServicesDocument);
+    const videoRows = await getRows(client, GetAllPublicVideosDocument);
+    const categoryRows = await getRows(client, GetAllPublicCategoriesDocument);
+    const equipmentRows = await getRows(client, GetAllPublicEquipmentDocument);
+    const caseStudyRows = await getRows(client, GetAllPublicCaseStudiesDocument);
+    const fundingRows = await getRows(client, GetAllPublicFundingPagesDocument);
+    const capabilityRows = await getRows(client, GetAllPublicCapabilitiesDocument);
+    const processRows = await getRows(client, GetAllPublicProcessesDocument);
+
+    subHubRows ? report.push(...subHubRows.data) : null;
+    articleRows ? report.push(...articleRows.data) : null;
+    softwareRows ? report.push(...softwareRows.data) : null;
+    officialDocumentRows ? report.push(...officialDocumentRows.data) : null;
+    linkCardRows ? report.push(...linkCardRows.data) : null;
+    eventRows ? report.push(...eventRows.data) : null;
+    personRows ? report.push(...personRows.data) : null;
+    serviceRows ? report.push(...serviceRows.data) : null;
+    videoRows ? report.push(...videoRows.data) : null;
+    categoryRows ? report.push(...categoryRows.data) : null;
+    equipmentRows ? report.push(...equipmentRows.data) : null;
+    caseStudyRows ? report.push(...caseStudyRows.data) : null;
+    fundingRows ? report.push(...fundingRows.data) : null;
+    capabilityRows ? report.push(...capabilityRows.data) : null;
+    processRows ? report.push(...processRows.data) : null;
+
+    return {
+        report: report.map((item) => item.id)
+    };
 }
 
 // get contentful data
