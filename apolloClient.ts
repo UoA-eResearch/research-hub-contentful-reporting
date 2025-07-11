@@ -19,7 +19,7 @@ export function getApolloClient(): ApolloClient<NormalizedCacheObject> {
     const error = onError(({ graphQLErrors, operation }) => {
         if (graphQLErrors) {
             for (const error of graphQLErrors) {
-                console.error(`[GraphQL error]: in ${operation.operationName}: ${error.name}: ${error.message}`);
+                console.error(`[GraphQL error]: in ${operation.operationName}: ${error.message}`); 
             }
         }
     })
