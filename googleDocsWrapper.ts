@@ -1,4 +1,5 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
+import { JWT } from "google-auth-library";
 
 export type CurrentReportWorkSheet = 'Meta Data' | 'Content Overview' | 'Pages Per Category' | 'Pages Per Org Unit' | 'Content Graph' | 'Connection List';
 export type DataOverTimeWorkSheet = 'Content Types';
@@ -12,21 +13,25 @@ class GoogleDoc {
     }
 
     constructor(id: string) {
-        this.doc = new GoogleSpreadsheet(id);
+        this.doc = new GoogleSpreadsheet(id, this.authenticate());
     }
 
     public async initialise(): Promise<void> {
-        if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY)
-            throw Error("Could not find credentials");
-
-        await this.doc.useServiceAccountAuth({
-            client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-            private_key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/gm, '\n'),
-        });
-
         await this.doc.loadInfo();
 
         this._initialised = true;
+    }
+
+    private authenticate(): JWT {
+        if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY)
+            throw Error("Could not find credentials");
+
+        const auth = new JWT({
+            email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+            key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/gm, '\n'),
+        });
+
+        return auth;
     }
 
 }
