@@ -15,7 +15,7 @@ This is an AWS lambda function written in `typescript` and managed by serverless
 
 Install the serverless CLI
 ```bash
-npm install -g serverless
+npm install -g serverless@3.40.0
 ```
 This lambda function needs a token for access to the University of Auckland AWS test account. A token can be generated using [this](https://bitbucket.org/uoa/utility-aws-cli-access/) utility using University of Auckland credentials.
 
@@ -46,7 +46,7 @@ to run the lambda function locally. This should set up an endpoint accepting POS
 ### Deploy reporting lambda to AWS
 
 ```bash
-sls deploy [--stage <dev | report>] --config report.yml
+sls deploy [--stage <dev | report>] --config report.yml --aws-profile <profle-name>
 ```
 
 >Note: the `report` stage is only for the reporting lambda and corresponds to the 'production' version. It will gather information from the contentful 'prod' environment, but the deployment takes place into the AWS nonProd account.
