@@ -92,6 +92,7 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
 
         const dataOverTimeSheet = await dataOverTimeDoc.getSheet('Content Types');
 
+        await dataOverTimeSheet.loadHeaderRow();
         const headerValues = dataOverTimeSheet.headerValues;
         if (headerValues !== overviewSheetHeaderFields) {
             dataOverTimeSheet.setHeaderRow(overviewSheetHeaderFields);
