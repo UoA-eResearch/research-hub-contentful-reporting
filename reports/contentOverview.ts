@@ -1,7 +1,7 @@
 import { getApolloClient } from "../apolloClient";
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import { CurrentReportDoc, DataOverTimeDoc } from "../googleDocsWrapper";
-import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCapabilitiesDocument, GetAllCapabilitiesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery } from "./types";
+import { GetAllArticlesDocument, GetAllArticlesQuery, GetAllCapabilitiesDocument, GetAllCapabilitiesQuery, GetAllCaseStudiesDocument, GetAllCaseStudiesQuery, GetAllCategoriesDocument, GetAllCategoriesQuery, GetAllEquipmentDocument, GetAllEquipmentQuery, GetAllEventsDocument, GetAllEventsQuery, GetAllFundingPagesDocument, GetAllFundingPagesQuery, GetAllLinkCardsDocument, GetAllLinkCardsQuery, GetAllOfficialDocumentsDocument, GetAllOfficialDocumentsQuery, GetAllPersonsDocument, GetAllPersonsQuery, GetAllServicesDocument, GetAllServicesQuery, GetAllSoftwaresDocument, GetAllSoftwaresQuery, GetAllSubHubsDocument, GetAllSubHubsQuery, GetAllVideosDocument, GetAllVideosQuery, GetAllProcessesDocument, GetAllProcessesQuery } from "./types";
 import { uploadCsv } from "../csvUpload";
 import { ResultOf } from "@graphql-typed-document-node/core";
 
@@ -15,7 +15,7 @@ let GRAPHQL_CHUNK_SIZE = 50;
  * this is ugly, but there dosn't seem to be a way to turn a union type into an array of all possible values
  * add new titles to both this array and the union type HeaderTitle
  */
-const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities'];
+const overviewSheetHeaderFields: ContentOverviewSummaryTitle[] = ['Date', 'SubHubs', 'Articles', 'Software', 'Official Documents', 'Link Cards', 'Events', 'Persons', 'Services', 'Videos', 'Categories', 'Infrastructure', 'CaseStudies', 'Funding Pages', 'Capabilities', 'Processes'];
 const sheetHeaderFields: ContentOverviewHeaderTitle[] = ['ID', 'Title', 'Slug', 'Last Updated', 'Next Review', 'First Published', 'Owner', 'Publisher', 'Content Type', 'Related Orgs', 'Related Orgs 1', 'Related Orgs 2', 'Related Orgs 3', 'Linked Entries', 'Is SSO Protected', 'Is Searchable'];
 
 
@@ -23,12 +23,12 @@ type ContentOverviewRow = { [key in ContentOverviewHeaderTitle]: string | number
 type ContentOverviewHeaderTitle = 'ID' | 'Title' | 'Slug' | 'Last Updated' | 'Next Review' | 'First Published' | 'Owner' | 'Publisher' | 'Content Type' | 'Related Orgs' | 'Related Orgs 1' | 'Related Orgs 2' | 'Related Orgs 3' | 'Linked Entries' | 'Is SSO Protected' | 'Is Searchable';
 
 type ContentOverviewSummaryRow = { [key in ContentOverviewSummaryTitle]: string | number | boolean };
-type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities';
+type ContentOverviewSummaryTitle = 'Date' | 'SubHubs' | 'Articles' | 'Software' | 'Official Documents' | 'Link Cards' | 'Events' | 'Persons' | 'Services' | 'Videos' | 'Categories' | 'Infrastructure' | 'CaseStudies' | 'Funding Pages' | 'Capabilities' | 'Processes';
 
-type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
+type ContentfulDocumentType = typeof GetAllArticlesDocument | typeof GetAllCapabilitiesDocument | typeof GetAllCaseStudiesDocument | typeof GetAllCategoriesDocument | typeof GetAllEquipmentDocument | typeof GetAllEventsDocument | typeof GetAllFundingPagesDocument | typeof GetAllLinkCardsDocument | typeof GetAllOfficialDocumentsDocument | typeof GetAllPersonsDocument | typeof GetAllProcessesDocument | typeof GetAllServicesDocument | typeof GetAllSoftwaresDocument | typeof GetAllSubHubsDocument | typeof GetAllVideosDocument;
 type ContentfulQueryType = ResultOf<ContentfulDocumentType>;
 
-type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability';
+type ContentType = 'SubHub' | 'Article' | 'Software' | 'OfficialDocuments' | 'LinkCard' | 'Event' | 'Person' | 'Service' | 'Video' | 'Category' | 'Equipment' | 'CaseStudy' | 'Funding' | 'Capability' | 'Process';
 
 interface ContentOverviewData {
     id: string;
@@ -64,7 +64,8 @@ interface ContentOverviewSummaryData {
     infrastructure: number;
     caseStudies: number;
     fundingPages: number;
-    capabilities: number
+    capabilities: number;
+    processes: number;
 }
 
 // export function to run report
@@ -115,7 +116,8 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
                 Infrastructure: row.get('Infrastructure') ?? 0,
                 CaseStudies: row.get('CaseStudies') ?? 0,
                 "Funding Pages": row.get('Funding Pages') ?? 0,
-                Capabilities: row.get('Capabilities') ?? 0
+                Capabilities: row.get('Capabilities') ?? 0,
+                Processes: row.get('Processes') ?? 0
             }
 
             return summaryRow;
@@ -148,6 +150,7 @@ function getTotal(query: ContentfulQueryType): number {
     if ('caseStudyCollection' in query) return query.caseStudyCollection?.total ?? 0;
     if ('fundingCollection' in query) return query.fundingCollection?.total ?? 0;
     if ('capabilityCollection' in query) return query.capabilityCollection?.total ?? 0;
+    if ('processCollection' in query) return query.processCollection?.total ?? 0;
 
     throw new Error(`Unknown query type: ${query}`);
 }
@@ -169,6 +172,7 @@ function mapReportData(query: ContentfulQueryType): Partial<ContentOverviewData>
     if ('caseStudyCollection' in query) return mapReportDataCaseStudies(query);
     if ('fundingCollection' in query) return mapReportDataFundingPages(query);
     if ('capabilityCollection' in query) return mapReportDataCapabilityPages(query);
+    if ('processCollection' in query) return mapReportDataProcesses(query);
 
     throw new Error(`Unknown query type: ${query}`);
 }
@@ -308,6 +312,30 @@ function mapReportDataPersons(queryData: GetAllPersonsQuery): Partial<ContentOve
             id: item?.sys?.id,
             lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
             title: item?.name ? item.name : '',
+            firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
+        }
+
+        return rowData;
+    });
+}
+function mapReportDataProcesses(queryData: GetAllProcessesQuery): Partial<ContentOverviewData>[] | undefined {
+    return queryData.processCollection?.items.map((item) => {
+        const rowData: Partial<ContentOverviewData> = {
+            contentType: item?.__typename,
+            id: item?.sys?.id,
+            isSearchable: item?.searchable,
+            isSsoProtected: item?.ssoProtected,
+            lastUpdated: item?.sys?.publishedAt ? new Date(item.sys.publishedAt) : null,
+            nextReview: item?.nextReview ? new Date(item.nextReview) : null,
+            owner: item?.owner?.name ? item.owner.name : '',
+            publisher: item?.publisher?.name ? item.publisher.name : '',
+            slug: item?.slug ? item.slug : '',
+            title: item?.title ? item.title : '',
+            relatedOrgs: item?.relatedOrgsCollection?.total,
+            relatedOrgs1: item?.relatedOrgsCollection?.items[0]?.name,
+            relatedOrgs2: item?.relatedOrgsCollection?.items[1]?.name,
+            relatedOrgs3: item?.relatedOrgsCollection?.items[2]?.name,
+            linkedEntries: item?.relatedProcessesCollection?.total,
             firstPublishedAt: item?.sys.firstPublishedAt ? new Date(item.sys.firstPublishedAt) : null
         }
 
@@ -492,6 +520,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     const caseStudyRows = await getRows(client, GetAllCaseStudiesDocument);
     const fundingRows = await getRows(client, GetAllFundingPagesDocument);
     const capabilityRows = await getRows(client, GetAllCapabilitiesDocument);
+    const processRows = await getRows(client, GetAllProcessesDocument);
 
     subHubRows ? report.push(...subHubRows.data) : null;
     articleRows ? report.push(...articleRows.data) : null;
@@ -507,6 +536,7 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
     caseStudyRows ? report.push(...caseStudyRows.data) : null;
     fundingRows ? report.push(...fundingRows.data) : null;
     capabilityRows ? report.push(...capabilityRows.data) : null;
+    processRows ? report.push(...processRows.data) : null;
 
     const summary: ContentOverviewSummaryData = {
         linkCards: linkCardRows?.total ?? 0,
@@ -523,7 +553,8 @@ async function getData(): Promise<{ summary: ContentOverviewSummaryRow, report: 
         infrastructure: equipmentRows?.total ?? 0,
         caseStudies: caseStudyRows?.total ?? 0,
         fundingPages: fundingRows?.total ?? 0,
-        capabilities: capabilityRows?.total ?? 0
+        capabilities: capabilityRows?.total ?? 0,
+        processes: processRows?.total ?? 0
     };
 
     return {
@@ -617,7 +648,8 @@ function makeOverviewSummaryRow(data: ContentOverviewSummaryData): ContentOvervi
         Infrastructure: data.infrastructure,
         CaseStudies: data.caseStudies,
         "Funding Pages": data.fundingPages,
-        Capabilities: data.capabilities
+        Capabilities: data.capabilities,
+        Processes: data.processes
     };
 }
 

@@ -31,7 +31,10 @@ query GetPagesPerOrgUnit($limit: Int!, $skip: Int) {
         articleCollection(limit: 1) {
           total
         }
+        processCollection(limit: 1) {
+          total
+        }
       }
     }
   }
-}
+} 
