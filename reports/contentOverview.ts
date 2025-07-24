@@ -102,22 +102,22 @@ export async function runContentOverview(chunkSize?: number): Promise<void> {
         // get data over time values from sheet and convert to ContentOverviewSummaryRow[] for csv upload
         const dotsRows = (await dataOverTimeSheet.getRows()).map((row) => {
             const summaryRow: ContentOverviewSummaryRow = {
-                Date: row.Date,
-                SubHubs: row.SubHubs ?? 0,
-                Articles: row.Articles ?? 0,
-                Software: row.Software ?? 0,
-                "Official Documents": row["Official Documents"] ?? 0,
-                "Link Cards": row["Link Cards"] ?? 0,
-                Events: row.Events ?? 0,
-                Persons: row.Persons ?? 0,
-                Services: row.Services ?? 0,
-                Videos: row.Videos ?? 0,
-                Categories: row.Categories ?? 0,
-                Infrastructure: row.Infrastructure ?? 0,
-                CaseStudies: row.CaseStudies ?? 0,
-                "Funding Pages": row["Funding Pages"] ?? 0,
-                Capabilities: row.Capabilities ?? 0,
-                Processes: row.Processes ?? 0
+                Date: row.get('Date'),
+                SubHubs: row.get('SubHubs') ?? 0,
+                Articles: row.get('Articles') ?? 0,
+                Software: row.get('Software') ?? 0,
+                "Official Documents": row.get('Official Documents') ?? 0,
+                "Link Cards": row.get('Link Cards') ?? 0,
+                Events: row.get('Events') ?? 0,
+                Persons: row.get('Persons') ?? 0,
+                Services: row.get('Services') ?? 0,
+                Videos: row.get('Videos') ?? 0,
+                Categories: row.get('Categories') ?? 0,
+                Infrastructure: row.get('Infrastructure') ?? 0,
+                CaseStudies: row.get('CaseStudies') ?? 0,
+                "Funding Pages": row.get('Funding Pages') ?? 0,
+                Capabilities: row.get('Capabilities') ?? 0,
+                Processes: row.get('Processes') ?? 0
             }
 
             return summaryRow;
