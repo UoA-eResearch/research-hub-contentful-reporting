@@ -1,8 +1,8 @@
 {
     "resourceKey": "key/57b5e68-e513-4b70-adf9-70eca8298d83",
     "CONTENTFUL_SPACE_ENV": "prod",
-    "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/prod/research-hub/contentful-mgmt-access-token~true}",
-    "CONTENTFUL_SPACE_ID": "${ssm:/prod/research-hub/contentful-space-id~true}",
+    "CONTENTFUL_MGMT_ACCESS_TOKEN": "${ssm:/prod/research-hub/contentful-mgmt-access-token}",
+    "CONTENTFUL_SPACE_ID": "${ssm:/prod/research-hub/contentful-space-id}",
     "DEPLOYMENT_BUCKET_NAME": "prod",
     "CORS_ACCESS_CONTROL_ALLOW_ORIGINS": "*",
     "awsApiGatewayOauthScopes": "https://research-hub-prod.auckland.ac.nz/spa",
