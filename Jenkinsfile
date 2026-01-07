@@ -77,8 +77,8 @@ pipeline {
             steps {
                 echo "Deploying content-graph-api Lambda on ${env.BRANCH_NAME}"
                 script {                    
-                    sh "sls --version"
-                    sh "sls deploy --config graphAPI.yml --stage ${env.BRANCH_NAME} --aws-profile ${awsProfile}"
+                    sh "npx sls --version"
+                    sh "npx sls deploy --config graphAPI.yml --stage ${env.BRANCH_NAME} --aws-profile ${awsProfile}"
                     echo "Deploy to ${env.BRANCH_NAME} complete"
                 }
             }
