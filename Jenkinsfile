@@ -4,7 +4,7 @@ slackCredentials = "UoA-Slack-Access-Research-Hub"
 
 pipeline {
     agent {
-        label("uoa-buildtools-ionic")
+        label("uoa-buildtools-node20")
     }
 
     options {
