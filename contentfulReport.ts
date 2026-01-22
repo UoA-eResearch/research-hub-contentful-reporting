@@ -3,6 +3,7 @@ import { runContentGraphReports } from "./reports/contentGraph";
 import { runContentOverview } from "./reports/contentOverview";
 import { runPagesPerCategory } from "./reports/pagesPerCategory";
 import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
+import { runContentMetadata } from "./reports/contentMetadata";
 
 
 // Lambda exports
@@ -10,6 +11,7 @@ import { runPagesPerOrgUnit } from "./reports/pagesPerOrgUnit";
 export async function contentful(): Promise<APIGatewayProxyResult> {
     try {
         await runContentOverview(50);
+        await runContentMetadata(50);
         await runPagesPerCategory();
         await runPagesPerOrgUnit(10);
         await runContentGraphReports();
